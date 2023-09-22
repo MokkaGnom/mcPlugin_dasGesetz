@@ -98,11 +98,11 @@ public class DeathChestManager implements Listener
 			DeathChest dc = getDeathChest(event.getClickedBlock());
 			if (dc != null)
 			{
+				event.setCancelled(true); // To stop the "normal" chest inventory from opening
 				if ((dc.checkIfOwner(p) && p.hasPermission("dg.deathChestPermission")) || p.hasPermission("dg.deathChestByPassPermission"))
 				{
 					try
 					{
-						event.setCancelled(true); // To stop the "normal" chest inventory from opening
 						if (dc.collect())
 						{
 							deathChests.remove(dc);
@@ -117,8 +117,8 @@ public class DeathChestManager implements Listener
 				else
 				{
 					sendMessage(p.getUniqueId(), "No permission!");
-					sendMessage(dc.getOwner().getUniqueId(), p.getName() + " tried to open your Death Chest at X:" + dc.getBlock().getLocation().getX() + " Y:"
-							+ dc.getBlock().getLocation().getY() + " Z:" + dc.getBlock().getLocation().getZ());
+					//sendMessage(dc.getOwner().getUniqueId(), p.getName() + " tried to open your Death Chest at X:" + dc.getBlock().getLocation().getX() + " Y:"
+							//+ dc.getBlock().getLocation().getY() + " Z:" + dc.getBlock().getLocation().getZ());
 				}
 			}
 		}

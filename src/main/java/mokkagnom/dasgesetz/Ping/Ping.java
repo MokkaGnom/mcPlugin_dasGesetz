@@ -12,7 +12,7 @@ public class Ping
     {
         AreaEffectCloud aec = (AreaEffectCloud) block.getWorld().spawnEntity(block.getLocation().add(0, 1, 0), EntityType.AREA_EFFECT_CLOUD);
         aec.setColor(Color.fromRGB(255, 183, 197));
-        aec.setDuration(pm.getTime()/1000);
+        aec.setDuration(pm.getTime()/50);
         aec.setCustomName(playername + "'s Ping");
         aec.setCustomNameVisible(true);
         aec.setGlowing(true);

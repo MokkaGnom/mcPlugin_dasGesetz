@@ -95,8 +95,8 @@ public class Manager implements TabExecutor
 		config.addDefault("Homes.MaxHomes", 10);
 		config.addDefault("Timber.BreakLeaves", true);
 		config.addDefault("Timber.BreakLeavesRadius", 4);
-		config.addDefault("Ping.Duration", 5);
-		config.addDefault("Ping.Cooldown", 5);
+		config.addDefault("Ping.Duration", 5000);
+		config.addDefault("Ping.Cooldown", 5000);
 
 		for (int i = 0; i < plugins.length; i++)
 		{

@@ -25,8 +25,8 @@ public class PingManager implements Listener
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event)
     {
-        if (checkCooldown() && event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && event.getClickedBlock().getType().equals(Material.AIR)
-                && event.getPlayer().getInventory().getItemInOffHand().getType().equals(Material.STICK))
+        if (checkCooldown() && event.getPlayer().getInventory().getItemInOffHand().getType().equals(Material.STICK)
+                && (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)))
         {
             new Ping(this, event.getPlayer().getTargetBlock(null, 255), event.getPlayer().getName());
             lastPingTime = System.currentTimeMillis();

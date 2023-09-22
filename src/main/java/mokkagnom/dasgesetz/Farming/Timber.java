@@ -23,7 +23,7 @@ import java.util.HashMap;
 public class Timber implements Listener
 {
 	public static final Material[] timberMaterial = { Material.ACACIA_LOG, Material.BIRCH_LOG, Material.DARK_OAK_LOG, Material.JUNGLE_LOG, Material.MANGROVE_LOG, Material.OAK_LOG,
-			Material.SPRUCE_LOG };
+			Material.SPRUCE_LOG, Material.CHERRY_LOG };
 	public static final Material[] timberAxeMaterial = { Material.DIAMOND_AXE, Material.GOLDEN_AXE, Material.IRON_AXE, Material.NETHERITE_AXE, Material.STONE_AXE, Material.WOODEN_AXE };
 	private final boolean breakLeaves;
 	private final int breakLeavesRadius;

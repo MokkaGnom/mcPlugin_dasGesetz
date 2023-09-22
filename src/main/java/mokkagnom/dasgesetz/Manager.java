@@ -13,6 +13,7 @@ import mokkagnom.dasgesetz.BlockLock.BlockLockManager;
 import mokkagnom.dasgesetz.DeathChest.*;
 import mokkagnom.dasgesetz.Farming.EasyFarming;
 import mokkagnom.dasgesetz.Farming.Timber;
+import mokkagnom.dasgesetz.Ping.PingManager;
 import mokkagnom.dasgesetz.Home.HomeCommands;
 import mokkagnom.dasgesetz.Other.Messages;
 import mokkagnom.dasgesetz.Other.blockLogger;
@@ -28,7 +29,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 public class Manager implements TabExecutor
 {
 	private Main main = null;
-	private final String[] plugins = { "DasGesetz", "WeatherClear", "Coords", "BlockLogger", "Timber", "DeathChest", "BlockLock", "Messages", "Home", "EasyFarming" };
+	private final String[] plugins = { "DasGesetz", "WeatherClear", "Coords", "BlockLogger", "Timber", "DeathChest", "BlockLock", "Messages", "Home", "EasyFarming", "Ping" };
 	private final String[] commands = { "dasGesetz", "weatherClear", "coords", "blockLock", "home" };
 	private final TabExecutor[] commandExe;
 	private final Listener[] commandListener;
@@ -36,9 +37,9 @@ public class Manager implements TabExecutor
 	public Manager(Main main)
 	{
 		this.main = main;
-		commandListener = new Listener[] { new blockLogger(),
-				new Timber(main.getConfig().getBoolean("Timber.BreakLeaves"), main.getConfig().getInt("Timber.BreakLeavesRadius")), new DeathChestManager(main, 12000, true),
-				new BlockLockManager(this), new Messages(main.getConfig().getBoolean("Messages.ShowOPJoinMessage")), new EasyFarming() };
+		commandListener = new Listener[] { new blockLogger(), new Timber(main.getConfig().getBoolean("Timber.BreakLeaves"), main.getConfig().getInt("Timber.BreakLeavesRadius")),
+				new DeathChestManager(main, 12000, true), new BlockLockManager(this), new Messages(main.getConfig().getBoolean("Messages.ShowOPJoinMessage")), new EasyFarming(),
+				new PingManager(main, main.getConfig().getInt("Ping.Duration"), main.getConfig().getInt("Ping.Cooldown")) };
 		commandExe = new TabExecutor[] { new dasGesetz(), new weatherClear(), new coords(), new BlockLockCommands((BlockLockManager) commandListener[3]),
 				new HomeCommands(this, main.getConfig().getInt("Homes.MaxHomes")) };
 	}
@@ -94,6 +95,8 @@ public class Manager implements TabExecutor
 		config.addDefault("Homes.MaxHomes", 10);
 		config.addDefault("Timber.BreakLeaves", true);
 		config.addDefault("Timber.BreakLeavesRadius", 4);
+		config.addDefault("Ping.Duration", 5);
+		config.addDefault("Ping.Cooldown", 5);
 
 		for (int i = 0; i < plugins.length; i++)
 		{
@@ -161,6 +164,10 @@ public class Manager implements TabExecutor
 
 					case 9: // EasyFarming:
 						main.getServer().getPluginManager().registerEvents(commandListener[5], main);
+						break;
+
+					case 10: // Ping:
+						main.getServer().getPluginManager().registerEvents(commandListener[6], main);
 						break;
 					}
 				}

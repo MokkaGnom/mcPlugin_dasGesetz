@@ -39,7 +39,8 @@ public class dasGesetz implements TabExecutor
 			"(26) Als Schaden wird mind. ein Schaden von einem ganzen Herzen angesehen.\n", "(27) Man stimmt diesem Gesetzbuch automatisch zu indem man den Server betritt.\n",
 			"(28) Ein Spieler darf nicht ohne Erlaubnis des Besitzers Gegenstände oder Blöcke in oder um das Haus eines anderen Spielers platzieren.\n",
 			"(29) Ein Spieler darf keine Blöcke, welche sich auf dem Grundstück eines anderen Spielers befinden, ohne dessen Einverständnis, verändern. \n",
-			"(30) Wenn der betroffene Spieler, dem Spieler, die ausdrückliche Erlaubnis gegeben hat, ist diese Tat von der Strafverfolgung ausgeschlossen. \n" };
+			"(30) Wenn der betroffene Spieler, dem Spieler, die ausdrückliche Erlaubnis gegeben hat, ist diese Tat von der Strafverfolgung ausgeschlossen. \n",
+			"(31) Das Texture-Pack X-Ray, oder vergleichbare Mittel zum leichteren erhalt von Erzen sind verboten" };
 
 	public String getGesetz(int a)
 	{

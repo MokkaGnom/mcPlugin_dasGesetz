@@ -2,6 +2,7 @@ package mokkagnom.dasgesetz.BlockLock;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 // Bukkit:
 import org.bukkit.Bukkit;
@@ -61,61 +62,70 @@ public class BlockLockCommands implements TabExecutor
 				{
 					boolean bool = Boolean.parseBoolean(args[1]);
 					clManager.showMenu(p, bool);
-					if(bool)
-					{
+					if (bool)
 						BlockLockManager.sendMessage(p.getUniqueId(), "Menu active");
-						return true;
-					}
 					else
-					{
 						BlockLockManager.sendMessage(p.getUniqueId(), "Menu inactive");
-						return false;
-					}
+					return true;
 				}
 
 				// Friends:
-				Player friend = Bukkit.getPlayer(args[1]);
-				if (friend == null)
+				Player friendPlayer = Bukkit.getPlayer(args[1]);
+				UUID owner = p.getUniqueId();
+				UUID friend = null;
+				String friendName = null;
+				if (friendPlayer == null)
 				{
 					for (OfflinePlayer i : Bukkit.getOfflinePlayers())
 					{
 						if (i.getName().equalsIgnoreCase(args[1]))
 						{
-							friend = i.getPlayer();
+							friendPlayer = i.getPlayer();
 							break;
 						}
 					}
 				}
 
-				if (friend != null)
+				if (friendPlayer != null)
 				{
+					try
+					{
+						friend = friendPlayer.getUniqueId();
+						friendName = friendPlayer.getName();
+					}
+					catch (Exception e)
+					{
+						Bukkit.getLogger().severe("BLcmd: Friend: FriendPlayer Exception: " + e.getLocalizedMessage());
+						BlockLockManager.sendMessage(owner, "BLcmd: Friend: FriendPlayer Exception: " + e.getLocalizedMessage());
+					}
+
 					if (args[0].equalsIgnoreCase("addfriend"))
 					{
-						if (clManager.addFriend(p, b, friend))
-							BlockLockManager.sendMessage(p.getUniqueId(), friend.getName() + " added (local)");
+						if (clManager.addFriend(owner, b, friend))
+							BlockLockManager.sendMessage(owner, friendName + " added (local)");
 						else
-							BlockLockManager.sendMessage(p.getUniqueId(), "Couldn't add (local) " + friend.getName());
+							BlockLockManager.sendMessage(owner, "Couldn't add (local) " + friendName);
 					}
 					else if (args[0].equalsIgnoreCase("removefriend"))
 					{
-						if (clManager.removeFriend(p, b, friend))
-							BlockLockManager.sendMessage(p.getUniqueId(), friend.getName() + " removed (local)");
+						if (clManager.removeFriend(owner, b, friend))
+							BlockLockManager.sendMessage(owner, friendName + " removed (local)");
 						else
-							BlockLockManager.sendMessage(p.getUniqueId(), "Couldn't remove (local) " + friend.getName());
+							BlockLockManager.sendMessage(owner, "Couldn't remove (local) " + friendName);
 					}
 					else if (args[0].equalsIgnoreCase("addGlobalFriend"))
 					{
-						if (clManager.addGlobalFriend(p, friend))
-							BlockLockManager.sendMessage(p.getUniqueId(), friend.getName() + " added (global)");
+						if (clManager.addGlobalFriend(owner, friend))
+							BlockLockManager.sendMessage(owner, friendName + " added (global)");
 						else
-							BlockLockManager.sendMessage(p.getUniqueId(), "Couldn't add (global) " + friend.getName());
+							BlockLockManager.sendMessage(owner, "Couldn't add (global) " + friendName);
 					}
 					else if (args[0].equalsIgnoreCase("removeGlobalFriend"))
 					{
-						if (clManager.removeGlobalFriend(p, friend))
-							BlockLockManager.sendMessage(p.getUniqueId(), friend.getName() + " removed (global)");
+						if (clManager.removeGlobalFriend(owner, friend))
+							BlockLockManager.sendMessage(owner, friendName + " removed (global)");
 						else
-							BlockLockManager.sendMessage(p.getUniqueId(), "Couldn't remove (global) " + friend.getName());
+							BlockLockManager.sendMessage(owner, "Couldn't remove (global) " + friendName);
 					}
 					else
 					{
@@ -150,7 +160,8 @@ public class BlockLockCommands implements TabExecutor
 		{
 			return Arrays.asList("lock", "unlock", "addFriend", "removeFriend", "addGlobalFriend", "removeGlobalFriend", "listFriend", "showMenu");
 		}
-		else if (args.length == 2 && (args[0].equalsIgnoreCase("addFriend") || args[0].equalsIgnoreCase("removeFriend")))
+		else if (args.length == 2 && (args[0].equalsIgnoreCase("addFriend") || args[0].equalsIgnoreCase("removeFriend") || args[0].equalsIgnoreCase("addGlobalFriend")
+				|| args[0].equalsIgnoreCase("removeGlobalFriend")))
 		{
 			return null;
 		}

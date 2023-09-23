@@ -101,7 +101,7 @@ public class BlockLockManager implements Listener
 			{
 				if (bl.checkIfPermissionToOpen(p.getUniqueId()))
 				{
-					if (p.isSneaking())
+					if (p.isSneaking() && getBlockLockUser(p.getUniqueId()).getUseSneakMenu())
 					{
 						bl.openManagerInventory(p);
 						event.setCancelled(true);
@@ -232,44 +232,44 @@ public class BlockLockManager implements Listener
 		return list;
 	}
 
-	public boolean addFriend(Player owner, Block b, Player friend)
+	public boolean addFriend(UUID owner, Block b, UUID friend)
 	{
 		if (owner == null || friend == null)
 			return false;
 
 		BlockLock bl = getBlockLock(b);
-		if (bl != null && bl.getOwner().getUuid().equals(owner.getUniqueId()))
+		if (bl != null && bl.getOwner().getUuid().equals(owner))
 		{
-			return bl.addFriend(friend.getUniqueId());
+			return bl.addFriend(friend);
 		}
 		return false;
 	}
 
-	public boolean removeFriend(Player owner, Block b, Player friend)
+	public boolean removeFriend(UUID owner, Block b, UUID friend)
 	{
 		if (owner == null || friend == null)
 			return false;
 
 		BlockLock bl = getBlockLock(b);
-		if (bl != null && bl.getOwner().getUuid().equals(owner.getUniqueId()))
+		if (bl != null && bl.getOwner().getUuid().equals(owner))
 		{
-			return bl.removeFriend(friend.getUniqueId());
+			return bl.removeFriend(friend);
 		}
 		return false;
 	}
 
-	public boolean addGlobalFriend(Player owner, Player friend)
+	public boolean addGlobalFriend(UUID owner, UUID friend)
 	{
 		if (owner == null || friend == null)
 			return false;
-		return getBlockLockUser(owner.getUniqueId()).addFriend(friend.getUniqueId());
+		return getBlockLockUser(owner).addFriend(friend);
 	}
 
-	public boolean removeGlobalFriend(Player owner, Player friend)
+	public boolean removeGlobalFriend(UUID owner, UUID friend)
 	{
 		if (owner == null || friend == null)
 			return false;
-		return getBlockLockUser(owner.getUniqueId()).removeFriend(friend.getUniqueId());
+		return getBlockLockUser(owner).removeFriend(friend);
 	}
 
 	public BlockLockUser createBlockLockUser(UUID uuid)
@@ -400,7 +400,6 @@ public class BlockLockManager implements Listener
 		}
 		else
 		{
-
 			int cibb = checkIfBlockBelow(b, event.getPlayer());
 			if (cibb == 1)
 				event.setCancelled(true);
@@ -426,7 +425,7 @@ public class BlockLockManager implements Listener
 	}
 
 	/** Preventing the Block from being damaged */
-	@EventHandler
+	/* @EventHandler
 	public void onBlockDamage(BlockDamageEvent event)
 	{
 		if (event.getBlock().getType().equals(Material.CHEST))
@@ -434,7 +433,7 @@ public class BlockLockManager implements Listener
 			if (getBlockLock(event.getBlock()) != null)
 				event.setCancelled(true);
 		}
-	}
+	} */
 
 	/** Preventing the Block from being blown up by Creeper, Wither or TNT */
 	@EventHandler

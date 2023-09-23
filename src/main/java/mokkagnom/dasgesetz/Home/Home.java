@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 public class Home implements Serializable
 {
-	private static final long serialVersionUID = -6297703952228213492L;
+	private static final long serialVersionUID = -9147135794798540695L;
 	private String name;
 	private double blockPosition[];
 	private String worldName;

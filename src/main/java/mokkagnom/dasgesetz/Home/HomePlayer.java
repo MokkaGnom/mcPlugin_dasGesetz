@@ -9,7 +9,7 @@ import org.bukkit.Bukkit;
 
 public class HomePlayer implements Serializable
 {
-	private static final long serialVersionUID = 4568652202019256640L;
+	private static final long serialVersionUID = 9190039589444349534L;
 	private List<Home> homes;
 	private UUID owner;
 	public static int maxHomes = 10;

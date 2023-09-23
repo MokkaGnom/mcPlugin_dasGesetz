@@ -17,7 +17,7 @@ import java.util.UUID;
 
 public class BlockLock implements Serializable
 {
-	private static final long serialVersionUID = 3821816129927078388L;
+	private static final long serialVersionUID = -6219146668662749418L;
 	private transient BlockLockManagerMenu blmm;
 	private int blockPosition[];
 	private String worldName;

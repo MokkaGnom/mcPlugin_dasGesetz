@@ -9,6 +9,7 @@ import org.bukkit.block.Block;
 
 public class BlockLockUser implements Serializable
 {
+    private static final long serialVersionUID = -3196410022180105734L;
     private UUID uuid;
     private List<BlockLock> blockLocks;
     private List<UUID> friends;

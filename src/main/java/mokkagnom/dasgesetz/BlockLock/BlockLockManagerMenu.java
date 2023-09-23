@@ -166,7 +166,8 @@ public class BlockLockManagerMenu implements Listener
 		}
 		catch (Exception e)
 		{
-			Bukkit.getLogger().severe("ManangerMenu: Inventory: Item Update Exception: " + e.getLocalizedMessage());
+			Bukkit.getLogger().severe("ManangerMenu: Friend-Inventory: Item Update Exception: " + e.getLocalizedMessage());
+			BlockLockManager.sendMessage(blockLock.getOwner().getUuid(), "ManangerMenu: Friend-Inventory: Item Update Exception: " + e.getLocalizedMessage());
 			return false;
 		}
 	}
@@ -215,6 +216,7 @@ public class BlockLockManagerMenu implements Listener
 		catch (Exception e)
 		{
 			Bukkit.getLogger().severe("ManangerMenu: Inventory: Item Update Exception: " + e.getLocalizedMessage());
+			BlockLockManager.sendMessage(blockLock.getOwner().getUuid(), "ManangerMenu: Inventory: Item Update Exception: " + e.getLocalizedMessage());
 			return false;
 		}
 	}

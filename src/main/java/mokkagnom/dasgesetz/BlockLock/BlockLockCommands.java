@@ -40,6 +40,10 @@ public class BlockLockCommands implements TabExecutor
 				{
 					clManager.lock(p, b);
 				}
+				else if (args[0].equalsIgnoreCase("listFriends"))
+				{
+					// TODO
+				}
 				else
 				{
 					BlockLockManager.sendMessage(p.getUniqueId(), "Ungültiger Syntax (1)");
@@ -103,6 +107,10 @@ public class BlockLockCommands implements TabExecutor
 		if (args.length == 1)
 		{
 			return Arrays.asList("lock", "unlock", "addFriend", "removeFriend");
+		}
+		else if (args.length == 2 && (args[0].equalsIgnoreCase("addFriend") || args[0].equalsIgnoreCase("removeFriend")))
+		{
+			return null;
 		}
 		return Arrays.asList("");
 	}

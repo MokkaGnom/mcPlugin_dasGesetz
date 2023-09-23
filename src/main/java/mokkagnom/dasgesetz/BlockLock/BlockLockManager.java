@@ -181,8 +181,7 @@ public class BlockLockManager implements Listener
 		BlockLock bl = getBlockLock(b);
 		if (bl == null && p.hasPermission("dg.blockLockPermission"))
 		{
-			BlockLockUser blu = getBlockLockUser(p.getUniqueId());
-			blu.createBlockLock(b).createManagerMenu(this);
+			getBlockLockUser(p.getUniqueId()).createBlockLock(b, this);
 			sendMessage(p.getUniqueId(), b.getType().toString() + " locked!");
 			return true;
 		}

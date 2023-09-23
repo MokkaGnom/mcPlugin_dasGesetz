@@ -23,10 +23,11 @@ public class BlockLockUser implements Serializable
         useSneakMenu = true;
     }
 
-    public BlockLock createBlockLock(Block b)
+    public BlockLock createBlockLock(Block b, BlockLockManager blm)
     {
         BlockLock bl = new BlockLock(b, this);
         blockLocks.add(bl);
+        bl.createManagerMenu(blm);
         return bl;
     }
 

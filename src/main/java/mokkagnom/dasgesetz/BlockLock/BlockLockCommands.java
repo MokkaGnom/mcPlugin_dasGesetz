@@ -165,6 +165,10 @@ public class BlockLockCommands implements TabExecutor
 		{
 			return null;
 		}
+		else if (args.length == 2 && args[0].equalsIgnoreCase("showMenu"))
+		{
+			return Arrays.asList("0", "1");
+		}
 		return Arrays.asList("");
 	}
 

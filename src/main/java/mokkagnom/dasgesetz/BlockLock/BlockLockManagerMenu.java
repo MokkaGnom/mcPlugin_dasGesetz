@@ -149,11 +149,11 @@ public class BlockLockManagerMenu implements Listener
 			{
 				p = Bukkit.getOfflinePlayer(blockLock.getAllFriends().get(i));
 				is = new ItemStack(Material.PLAYER_HEAD, 1);
-				skull = (SkullMeta) items[i].getItemMeta();
+				skull = (SkullMeta) is.getItemMeta();
 				skull.setDisplayName(p.getName());
 				skull.setOwningPlayer(p);
 				skull.setLore(lore);
-				items[i].setItemMeta(skull);
+				is.setItemMeta(skull);
 				friendsItems.add(is);
 			}
 
@@ -167,7 +167,7 @@ public class BlockLockManagerMenu implements Listener
 		catch (Exception e)
 		{
 			Bukkit.getLogger().severe("ManangerMenu: Friend-Inventory: Item Update Exception: " + e.getLocalizedMessage());
-			BlockLockManager.sendMessage(blockLock.getOwner().getUuid(), "ManangerMenu: Friend-Inventory: Item Update Exception: " + e.getLocalizedMessage());
+			BlockLockManager.sendMessage(blockLock.getOwner().getUuid(), "ManangerMenu: Friend-Inventory: Item Update Exception: " + e.getLocalizedMessage(), true);
 			return false;
 		}
 	}
@@ -216,7 +216,7 @@ public class BlockLockManagerMenu implements Listener
 		catch (Exception e)
 		{
 			Bukkit.getLogger().severe("ManangerMenu: Inventory: Item Update Exception: " + e.getLocalizedMessage());
-			BlockLockManager.sendMessage(blockLock.getOwner().getUuid(), "ManangerMenu: Inventory: Item Update Exception: " + e.getLocalizedMessage());
+			BlockLockManager.sendMessage(blockLock.getOwner().getUuid(), "ManangerMenu: Inventory: Item Update Exception: " + e.getLocalizedMessage(), true);
 			return false;
 		}
 	}

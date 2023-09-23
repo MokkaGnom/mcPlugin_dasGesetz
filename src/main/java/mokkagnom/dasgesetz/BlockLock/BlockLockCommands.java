@@ -29,7 +29,7 @@ public class BlockLockCommands implements TabExecutor
 		Player p = (Player) sender;
 		Block b = p.getTargetBlock(null, 255);
 
-		if (args[0].equalsIgnoreCase("listFriends"))
+		if (args[0].equalsIgnoreCase("listFriends")) // listFriends
 		{
 			for (String s : clManager.listFriends(p, b))
 			{
@@ -39,7 +39,7 @@ public class BlockLockCommands implements TabExecutor
 
 		if (clManager.isBlockLockable(b))
 		{
-			if (args.length == 1) // lock/unlock/listFriends
+			if (args.length == 1) // lock/unlock
 			{
 				if (args[0].equalsIgnoreCase("unlock"))
 				{

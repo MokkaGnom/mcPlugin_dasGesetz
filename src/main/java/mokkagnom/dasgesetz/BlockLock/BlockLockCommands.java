@@ -42,22 +42,38 @@ public class BlockLockCommands implements TabExecutor
 				}
 				else if (args[0].equalsIgnoreCase("listFriends"))
 				{
-					// TODO
-				}
-				else if(args[0].equalsIgnoreCase("disableMenu"))
-				{
-					// TODO
+					for (String s : clManager.listFriends(p, b))
+					{
+						sender.sendMessage(s);
+					}
 				}
 				else
 				{
-					BlockLockManager.sendMessage(p.getUniqueId(), "Ungültiger Syntax (1)");
+					BlockLockManager.sendMessage(p.getUniqueId(), "Unknown syntax (1)");
 					return false;
 				}
 				return true;
 
 			}
-			else if (args.length == 2) // Friends
+			else if (args.length == 2)
 			{
+				if (args[0].equalsIgnoreCase("showMenu"))
+				{
+					boolean bool = Boolean.parseBoolean(args[1]);
+					clManager.showMenu(p, bool);
+					if(bool)
+					{
+						BlockLockManager.sendMessage(p.getUniqueId(), "Menu active");
+						return true;
+					}
+					else
+					{
+						BlockLockManager.sendMessage(p.getUniqueId(), "Menu inactive");
+						return false;
+					}
+				}
+
+				// Friends:
 				Player friend = Bukkit.getPlayer(args[1]);
 				if (friend == null)
 				{
@@ -71,36 +87,58 @@ public class BlockLockCommands implements TabExecutor
 					}
 				}
 
-				if (args[0].equalsIgnoreCase("addfriend"))
+				if (friend != null)
 				{
-					if (clManager.addFriend(p, b, friend))
-						BlockLockManager.sendMessage(p.getUniqueId(), friend.getName() + " added (local)");
+					if (args[0].equalsIgnoreCase("addfriend"))
+					{
+						if (clManager.addFriend(p, b, friend))
+							BlockLockManager.sendMessage(p.getUniqueId(), friend.getName() + " added (local)");
+						else
+							BlockLockManager.sendMessage(p.getUniqueId(), "Couldn't add (local) " + friend.getName());
+					}
+					else if (args[0].equalsIgnoreCase("removefriend"))
+					{
+						if (clManager.removeFriend(p, b, friend))
+							BlockLockManager.sendMessage(p.getUniqueId(), friend.getName() + " removed (local)");
+						else
+							BlockLockManager.sendMessage(p.getUniqueId(), "Couldn't remove (local) " + friend.getName());
+					}
+					else if (args[0].equalsIgnoreCase("addGlobalFriend"))
+					{
+						if (clManager.addGlobalFriend(p, friend))
+							BlockLockManager.sendMessage(p.getUniqueId(), friend.getName() + " added (global)");
+						else
+							BlockLockManager.sendMessage(p.getUniqueId(), "Couldn't add (global) " + friend.getName());
+					}
+					else if (args[0].equalsIgnoreCase("removeGlobalFriend"))
+					{
+						if (clManager.removeGlobalFriend(p, friend))
+							BlockLockManager.sendMessage(p.getUniqueId(), friend.getName() + " removed (global)");
+						else
+							BlockLockManager.sendMessage(p.getUniqueId(), "Couldn't remove (global) " + friend.getName());
+					}
 					else
-						BlockLockManager.sendMessage(p.getUniqueId(), "Couldn't add (local) " + friend.getName());
-				}
-				else if (args[0].equalsIgnoreCase("removefriend"))
-				{
-					if (clManager.removeFriend(p, b, friend))
-						BlockLockManager.sendMessage(p.getUniqueId(), friend.getName() + " removed (local)");
-					else
-						BlockLockManager.sendMessage(p.getUniqueId(), "Couldn't remove (local) " + friend.getName());
+					{
+						BlockLockManager.sendMessage(p.getUniqueId(), "Unknown syntax (2)");
+						return false;
+					}
+					return true;
 				}
 				else
 				{
-					BlockLockManager.sendMessage(p.getUniqueId(), "Ungültiger Syntax (2)");
-					return false;
+					BlockLockManager.sendMessage(p.getUniqueId(), "Couldn't find player \"" + args[1] + "\"");
+					return true;
 				}
-				return true;
 			}
 			else
 			{
-				BlockLockManager.sendMessage(p.getUniqueId(), "Ungültiger Syntax (0)");
+				BlockLockManager.sendMessage(p.getUniqueId(), "Unknown syntax (0)");
 				return false;
 			}
 		}
 		else
 		{
-			BlockLockManager.sendMessage(p.getUniqueId(), "Kein unterstützter Block");
+			BlockLockManager.sendMessage(p.getUniqueId(), "Block not supported");
 			return false;
 		}
 	}
@@ -110,7 +148,7 @@ public class BlockLockCommands implements TabExecutor
 	{
 		if (args.length == 1)
 		{
-			return Arrays.asList("lock", "unlock", "addFriend", "removeFriend");
+			return Arrays.asList("lock", "unlock", "addFriend", "removeFriend", "addGlobalFriend", "removeGlobalFriend", "listFriend", "showMenu");
 		}
 		else if (args.length == 2 && (args[0].equalsIgnoreCase("addFriend") || args[0].equalsIgnoreCase("removeFriend")))
 		{

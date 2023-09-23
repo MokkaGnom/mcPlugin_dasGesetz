@@ -17,6 +17,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.entity.Wither;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
@@ -43,13 +44,13 @@ public class BlockLockManager implements Listener
 
 	private Manager manager;
 	private File saveFile;
-	private List<BlockLock> blockLocks;
+	private List<BlockLockUser> players;
 
 	public BlockLockManager(Manager manager)
 	{
 		this.manager = manager;
 		this.saveFile = new File(this.manager.getDataFolder(), "BlockLock.bin");
-		blockLocks = new ArrayList<BlockLock>();
+		players = new ArrayList<BlockLockUser>();
 	}
 
 	public static boolean sendMessage(UUID receiver, String message, boolean error)
@@ -98,18 +99,13 @@ public class BlockLockManager implements Listener
 
 			if (bl != null)
 			{
-				if (open(p, event.getClickedBlock()))
+				if (bl.checkIfPermissionToOpen(p.getUniqueId()))
 				{
 					if (p.isSneaking())
 					{
-						if (!bl.openManagerInventory(p))
-						{
-							sendMessage(p.getUniqueId(), "No permission!", true);
-						}
+						bl.openManagerInventory(p);
 						event.setCancelled(true);
 					}
-					else
-						return;
 				}
 				else
 				{
@@ -117,7 +113,6 @@ public class BlockLockManager implements Listener
 					event.setCancelled(true);
 				}
 			}
-
 		}
 	}
 
@@ -130,17 +125,17 @@ public class BlockLockManager implements Listener
 			ObjectOutputStream o = new ObjectOutputStream(f);
 
 			// Write count of objects to file
-			o.write(blockLocks.size());
+			o.write(players.size());
 
 			// Write objects to file
-			for (BlockLock i : blockLocks)
+			for (BlockLockUser i : players)
 			{
 				o.writeObject(i);
 			}
 
 			o.close();
 			f.close();
-			Bukkit.getConsoleSender().sendMessage("BlockLock saved " + blockLocks.size() + " BlockLocks");
+			Bukkit.getConsoleSender().sendMessage("BlockLockPlayers saved " + players.size() + " BlockLockPlayers");
 			return true;
 		}
 		catch (Exception e)
@@ -166,12 +161,12 @@ public class BlockLockManager implements Listener
 
 			for (int i = 0; i < size; i++)
 			{
-				blockLocks.add((BlockLock) o.readObject());
+				players.add((BlockLockUser) o.readObject());
 			}
 
 			o.close();
 			f.close();
-			Bukkit.getConsoleSender().sendMessage("BlockLock loaded " + blockLocks.size() + "/" + size + " BlockLocks");
+			Bukkit.getConsoleSender().sendMessage("BlockLock loaded " + players.size() + "/" + size + " BlockLockPlayers");
 			return true;
 		}
 		catch (Exception e)
@@ -181,20 +176,13 @@ public class BlockLockManager implements Listener
 		return false;
 	}
 
-	public boolean open(Player p, Block b)
-	{
-		BlockLock bl = getBlockLock(b);
-		return (bl != null && p.hasPermission("dg.blockLockPermission") && bl.checkIfPermissionToOpen(p.getUniqueId()));
-	}
-
 	public boolean lock(Player p, Block b)
 	{
 		BlockLock bl = getBlockLock(b);
 		if (bl == null && p.hasPermission("dg.blockLockPermission"))
 		{
-			bl = new BlockLock(b, p.getUniqueId());
-			bl.createManagerMenu(this);
-			blockLocks.add(bl);
+			BlockLockUser blu = getBlockLockUser(p.getUniqueId());
+			blu.createBlockLock(b).createManagerMenu(this);
 			sendMessage(p.getUniqueId(), b.getType().toString() + " locked!");
 			return true;
 		}
@@ -205,73 +193,100 @@ public class BlockLockManager implements Listener
 	public boolean unlock(Player p, Block b)
 	{
 		BlockLock bl = getBlockLock(b);
-		if (bl != null && p.hasPermission("dg.blockLockPermission") && bl.getOwner().equals(p.getUniqueId()))
+		if (bl != null)
 		{
-			blockLocks.remove(bl);
-			sendMessage(p.getUniqueId(), b.getType().toString() + " unlocked!");
-			System.gc();
-			return true;
+			if (p.hasPermission("dg.blockLockPermission") && bl.checkIfPermissionToOpen(p.getUniqueId()))
+			{
+				bl.unlock();
+				sendMessage(p.getUniqueId(), b.getType().toString() + " unlocked!");
+				System.gc();
+				return true;
+			}
+			else
+			{
+				sendMessage(p.getUniqueId(), "No permission!", true);
+				return false;
+			}
 		}
-		sendMessage(p.getUniqueId(), b.getType().toString() + " is already unlocked!");
+		sendMessage(p.getUniqueId(), b.getType().toString() + " is not locked!");
 		return false;
+	}
+
+	public void showMenu(Player p, boolean b)
+	{
+		getBlockLockUser(p.getUniqueId()).setUseSneakMenu(b);
+	}
+
+	public List<String> listFriends(Player owner, Block b)
+	{
+		List<String> list = new ArrayList<String>();
+
+		BlockLock bl = getBlockLock(b);
+		if (bl != null && bl.checkIfPermissionToOpen(owner.getUniqueId()))
+		{
+			for (UUID i : bl.getAllFriends())
+			{
+				list.add(Bukkit.getOfflinePlayer(i).getName() + "/" + i);
+			}
+		}
+		return list;
 	}
 
 	public boolean addFriend(Player owner, Block b, Player friend)
 	{
-		if (friend == null)
+		if (owner == null || friend == null)
 			return false;
 
 		BlockLock bl = getBlockLock(b);
-		if (bl != null && bl.getOwner().equals(owner.getUniqueId()))
+		if (bl != null && bl.getOwner().getUuid().equals(owner.getUniqueId()))
 		{
 			return bl.addFriend(friend.getUniqueId());
 		}
-		sendMessage(owner.getUniqueId(), "No permission!");
 		return false;
 	}
 
 	public boolean removeFriend(Player owner, Block b, Player friend)
 	{
-		if (friend == null)
+		if (owner == null || friend == null)
 			return false;
 
 		BlockLock bl = getBlockLock(b);
-		if (bl != null && bl.getOwner().equals(owner.getUniqueId()))
+		if (bl != null && bl.getOwner().getUuid().equals(owner.getUniqueId()))
 		{
 			return bl.removeFriend(friend.getUniqueId());
 		}
-		sendMessage(owner.getUniqueId(), "No permission!");
 		return false;
 	}
 
-	public boolean addGlobalFriend(Player owner, Block b, Player friend)
+	public boolean addGlobalFriend(Player owner, Player friend)
 	{
-		sendMessage(owner.getUniqueId(), "Not yet available. Coming soon.");
-		return false; // TODO
-//		if (friend == null)
-//			return false;
-//
-//		List<BlockLock> blocks = getAllLockBlocksToPlayer(owner.getUniqueId());
-//		for (BlockLock i : blocks)
-//		{
-//			i.addFriend(friend.getUniqueId());
-//		}
-//		return true;
+		if (owner == null || friend == null)
+			return false;
+		return getBlockLockUser(owner.getUniqueId()).addFriend(friend.getUniqueId());
 	}
 
-	public boolean removeGlobalFriend(Player owner, Block b, Player friend)
+	public boolean removeGlobalFriend(Player owner, Player friend)
 	{
-		sendMessage(owner.getUniqueId(), "Not yet available. Coming soon.");
-		return false; // TODO
-//		if (friend == null)
-//			return false;
-//
-//		List<BlockLock> blocks = getAllLockBlocksToPlayer(owner.getUniqueId());
-//		for (BlockLock i : blocks)
-//		{
-//			i.addFriend(friend.getUniqueId());
-//		}
-//		return true;
+		if (owner == null || friend == null)
+			return false;
+		return getBlockLockUser(owner.getUniqueId()).removeFriend(friend.getUniqueId());
+	}
+
+	public BlockLockUser createBlockLockUser(UUID uuid)
+	{
+		BlockLockUser blu = new BlockLockUser(uuid);
+		players.add(blu);
+		return blu;
+	}
+
+	public BlockLockUser getBlockLockUser(UUID uuid)
+	{
+		for (BlockLockUser i : players)
+		{
+			if (i.getUuid().equals(uuid))
+				return i;
+		}
+		return createBlockLockUser(uuid);
 	}
 
 	public boolean isBlockLockable(Block block)
@@ -283,10 +298,13 @@ public class BlockLockManager implements Listener
 	{
 		if (isBlockLockable(block))
 		{
-			for (BlockLock i : blockLocks)
+			for (BlockLockUser i : players)
 			{
-				if (i.getBlock().equals(block))
-					return i;
+				for (BlockLock bl : i.getBlockLocks())
+				{
+					if (bl.getBlock().equals(block))
+						return bl;
+				}
 			}
 		}
 		return null;
@@ -294,51 +312,43 @@ public class BlockLockManager implements Listener
 
 	public BlockLock getBlockLockFromInventory(Inventory inv)
 	{
-		for (BlockLock i : blockLocks)
+		for (BlockLockUser i : players)
 		{
-			if (i.getInventory().equals(inv))
-				return i;
+			for (BlockLock bl : i.getBlockLocks())
+			{
+				if (bl.getInventory().equals(inv))
+					return bl;
+			}
 		}
 		return null;
 	}
 
-	public List<UUID> getAllPlayer()
+	public List<BlockLockUser> getAllPlayer()
 	{
-		List<UUID> list = new ArrayList<UUID>();
-
-		for (BlockLock i : blockLocks)
-		{
-			if (!list.contains(i.getOwner()))
-			{
-				list.add(i.getOwner());
-			}
-		}
-
-		return list;
+		return players;
 	}
 
 	public List<BlockLock> getAllLockBlocksToPlayer(UUID owner)
 	{
-		List<BlockLock> blocks = new ArrayList<BlockLock>();
-
-		for (BlockLock i : blockLocks)
+		for (BlockLockUser i : players)
 		{
-			if (i.getOwner().equals(owner))
-			{
-				blocks.add(i);
-			}
+			if (i.getUuid().equals(owner))
+				return i.getBlockLocks();
 		}
 
-		return blocks;
+		return new ArrayList<BlockLock>();
 	}
 
 	public List<Block> getAllBlockLockBlocks()
 	{
 		List<Block> blocks = new ArrayList<Block>();
 
-		for (BlockLock i : blockLocks)
+		for (BlockLockUser i : players)
 		{
-			blocks.add(i.getBlock());
+			for (BlockLock bl : i.getBlockLocks())
+			{
+				blocks.add(bl.getBlock());
+			}
 		}
 
 		return blocks;
@@ -373,7 +383,7 @@ public class BlockLockManager implements Listener
 			BlockLock bl = getBlockLock(b);
 			if (bl != null)
 			{
-				if (bl.getOwner().equals(event.getPlayer().getUniqueId()))
+				if (bl.getOwner().getUuid().equals(event.getPlayer().getUniqueId()))
 					unlock(event.getPlayer(), b);
 				else
 					event.setCancelled(true);
@@ -426,21 +436,20 @@ public class BlockLockManager implements Listener
 		}
 	}
 
-	/** Preventing the Block from being blown up by a Creeper or TNT */
+	/** Preventing the Block from being blown up by Creeper, Wither or TNT */
 	@EventHandler
 	public void onEntityExplode(EntityExplodeEvent event)
 	{
 		try
 		{
-			if (event.getEntity() instanceof Creeper || event.getEntity() instanceof TNTPrimed)
+			if (event.getEntity() instanceof Creeper || event.getEntity() instanceof TNTPrimed || event.getEntity() instanceof Wither)
 			{
 				event.blockList().removeAll(getAllBlockLockBlocks());
 			}
 		}
 		catch (Exception e)
 		{
-			Bukkit.getConsoleSender().sendMessage("DC onEntityExplode: " + e.getLocalizedMessage());
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "say DC onEntityExplode: " + e.getLocalizedMessage());
+			Bukkit.getConsoleSender().sendMessage("BL onEntityExplode: " + e.getLocalizedMessage());
 		}
 	}
 

@@ -56,7 +56,7 @@ public class BlockLockManagerMenu implements Listener
 		}
 
 		SkullMeta skull = (SkullMeta) items[8].getItemMeta();
-		skull.setOwningPlayer(Bukkit.getServer().getPlayer(bl.getOwner()));
+		skull.setOwningPlayer(Bukkit.getServer().getPlayer(bl.getOwner().getUuid()));
 		skull.setLore(Arrays.asList("Manage friends"));
 		items[8].setItemMeta(skull);
 
@@ -145,9 +145,9 @@ public class BlockLockManagerMenu implements Listener
 			ItemStack is = null;
 			ArrayList<String> lore = new ArrayList<String>();
 			lore.add(ChatColor.RED + "Click to remove friend");
-			for (int i = 0; i < 54 && i < blockLock.getFriends().size(); i++)
+			for (int i = 0; i < 54 && i < blockLock.getAllFriends().size(); i++)
 			{
-				p = Bukkit.getOfflinePlayer(blockLock.getFriends().get(i));
+				p = Bukkit.getOfflinePlayer(blockLock.getAllFriends().get(i));
 				is = new ItemStack(Material.PLAYER_HEAD, 1);
 				skull = (SkullMeta) items[i].getItemMeta();
 				skull.setDisplayName(p.getName());

@@ -21,13 +21,13 @@ public class BlockLock implements Serializable
 	private transient BlockLockManagerMenu blmm;
 	private int blockPosition[];
 	private String worldName;
-	private UUID owner;
+	private BlockLockUser owner;
 	private List<UUID> friends;
 	private boolean hopperLock;
 	private boolean redstoneLock;
 	private boolean blockBelowLock;
 
-	public BlockLock(Block block, UUID owner)
+	public BlockLock(Block block, BlockLockUser owner)
 	{
 		blockPosition = new int[3];
 		blockPosition[0] = block.getX();
@@ -49,6 +49,11 @@ public class BlockLock implements Serializable
 		{
 			HandlerList.unregisterAll(this.blmm);
 		}
+	}
+
+	public boolean unlock()
+	{
+		return owner.removeBlockLock(this);
 	}
 
 	public boolean createManagerMenu(BlockLockManager blManager)
@@ -81,13 +86,16 @@ public class BlockLock implements Serializable
 	public boolean checkIfPermissionToOpen(UUID uuid)
 	{
 		Player p = Bukkit.getPlayer(uuid);
-		if (p != null && p.hasPermission("dg.blockLockByPassPermission"))
+		if ((p != null && p.hasPermission("dg.blockLockByPassPermission")) || owner.getUuid().equals(uuid)) // Owner / Admin
 		{
 			return true;
 		}
-		if (owner.equals(uuid))
-			return true;
-		for (UUID i : friends)
+		for (UUID i : friends) // Local friends
+		{
+			if (i.equals(uuid))
+				return true;
+		}
+		for (UUID i : owner.getFriends()) // Global friends
 		{
 			if (i.equals(uuid))
 				return true;
@@ -157,24 +165,48 @@ public class BlockLock implements Serializable
 		return Bukkit.getServer().getWorld(worldName).getBlockAt(blockPosition[0], blockPosition[1], blockPosition[2]);
 	}
 
-	public UUID getOwner()
+	public BlockLockUser getOwner()
 	{
 		return owner;
 	}
 
 	public Inventory getInventory()
 	{
-		Block block = Bukkit.getServer().getWorld(worldName).getBlockAt(blockPosition[0], blockPosition[1], blockPosition[2]);
-		if (BlockLockManager.lockableBlocks.contains(block.getType()))
+		try
 		{
-			return ((InventoryHolder) block.getState()).getInventory();
+			Block block = Bukkit.getServer().getWorld(worldName).getBlockAt(blockPosition[0], blockPosition[1], blockPosition[2]);
+			if (BlockLockManager.lockableBlocks.contains(block.getType()))
+			{
+				return ((InventoryHolder) block.getState()).getInventory();
+			}
+			return null;
 		}
-		return null;
+		catch (Exception e)
+		{
+			return null;
+		}
 	}
 
-	public List<UUID> getFriends()
+	public List<UUID> getLocaFriends()
 	{
 		return friends;
+	}
+
+	public List<UUID> getAllFriends()
+	{
+		List<UUID> list = new ArrayList<UUID>();
+
+		for (UUID i : owner.getFriends())
+		{
+			list.add(i);
+		}
+		for (UUID i : friends)
+		{
+			if (!list.contains(i))
+				list.add(i);
+		}
+
+		return list;
 	}
 
 }

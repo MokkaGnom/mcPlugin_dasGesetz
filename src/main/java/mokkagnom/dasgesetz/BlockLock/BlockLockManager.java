@@ -20,6 +20,7 @@ import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Wither;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.world.WorldSaveEvent;
 import org.bukkit.inventory.Inventory;
 
 import mokkagnom.dasgesetz.Manager;
@@ -81,6 +82,12 @@ public class BlockLockManager implements Listener
 	}
 
 	@EventHandler
+	public void onWorldSave(WorldSaveEvent event)
+	{
+		saveToFile();
+	}
+
+	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event)
 	{
 		if (isBlockLockable(event.getBlockPlaced()))
@@ -116,8 +123,32 @@ public class BlockLockManager implements Listener
 		}
 	}
 
+	public void validateAll()
+	{
+		try
+		{
+			for(BlockLockUser blu : players)
+			{
+				List<BlockLock> blocklocks = new ArrayList<BlockLock>();
+				blocklocks.addAll(blu.getBlockLocks());
+				for(BlockLock bl : blocklocks)
+				{
+					if(!isBlockLockable(bl.getBlock()))
+					{
+						bl.unlock();
+					}
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			Bukkit.getConsoleSender().sendMessage("BlockLock Error (Validate): " + e.getLocalizedMessage());
+		}
+	}
+
 	public boolean saveToFile()
 	{
+		validateAll();
 		try
 		{
 			saveFile.createNewFile(); // Creates saveFile, if not exists
@@ -228,6 +259,16 @@ public class BlockLockManager implements Listener
 				list.add(Bukkit.getOfflinePlayer(i).getName() + "/" + i);
 			}
 		}
+		else
+		{
+			for (UUID i : getBlockLockUser(owner.getUniqueId()).getFriends())
+			{
+				list.add(Bukkit.getOfflinePlayer(i).getName() + "/" + i);
+			}
+		}
+
+		if (list.size() == 0)
+			list.add("No friends");
 		return list;
 	}
 
@@ -424,15 +465,10 @@ public class BlockLockManager implements Listener
 	}
 
 	/** Preventing the Block from being damaged */
-	/* @EventHandler
-	public void onBlockDamage(BlockDamageEvent event)
-	{
-		if (event.getBlock().getType().equals(Material.CHEST))
-		{
-			if (getBlockLock(event.getBlock()) != null)
-				event.setCancelled(true);
-		}
-	} */
+	/*
+	 * @EventHandler public void onBlockDamage(BlockDamageEvent event) { if (event.getBlock().getType().equals(Material.CHEST)) { if (getBlockLock(event.getBlock()) != null)
+	 * event.setCancelled(true); } }
+	 */
 
 	/** Preventing the Block from being blown up by Creeper, Wither or TNT */
 	@EventHandler

@@ -158,7 +158,7 @@ public class BlockLockCommands implements TabExecutor
 	{
 		if (args.length == 1)
 		{
-			return Arrays.asList("lock", "unlock", "addFriend", "removeFriend", "addGlobalFriend", "removeGlobalFriend", "listFriend", "showMenu");
+			return Arrays.asList("lock", "unlock", "addFriend", "removeFriend", "addGlobalFriend", "removeGlobalFriend", "listFriends", "showMenu");
 		}
 		else if (args.length == 2 && (args[0].equalsIgnoreCase("addFriend") || args[0].equalsIgnoreCase("removeFriend") || args[0].equalsIgnoreCase("addGlobalFriend")
 				|| args[0].equalsIgnoreCase("removeGlobalFriend")))

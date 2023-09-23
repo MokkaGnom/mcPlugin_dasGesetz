@@ -29,9 +29,17 @@ public class BlockLockCommands implements TabExecutor
 		Player p = (Player) sender;
 		Block b = p.getTargetBlock(null, 255);
 
+		if (args[0].equalsIgnoreCase("listFriends"))
+		{
+			for (String s : clManager.listFriends(p, b))
+			{
+				sender.sendMessage(s);
+			}
+		}
+
 		if (clManager.isBlockLockable(b))
 		{
-			if (args.length == 1) // lock/unlock/listFriends/disableMenu
+			if (args.length == 1) // lock/unlock/listFriends
 			{
 				if (args[0].equalsIgnoreCase("unlock"))
 				{
@@ -41,13 +49,6 @@ public class BlockLockCommands implements TabExecutor
 				{
 					clManager.lock(p, b);
 				}
-				else if (args[0].equalsIgnoreCase("listFriends"))
-				{
-					for (String s : clManager.listFriends(p, b))
-					{
-						sender.sendMessage(s);
-					}
-				}
 				else
 				{
 					BlockLockManager.sendMessage(p.getUniqueId(), "Unknown syntax (1)");
@@ -56,7 +57,7 @@ public class BlockLockCommands implements TabExecutor
 				return true;
 
 			}
-			else if (args.length == 2)
+			else if (args.length == 2) // showmenu
 			{
 				if (args[0].equalsIgnoreCase("showMenu"))
 				{

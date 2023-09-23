@@ -60,8 +60,10 @@ public class Manager implements TabExecutor
 
 			main.getConfig().set("Manager." + plugins[index], deactivate);
 
-			String message[] = { "aktiviert", "deaktiviert" };
-			sender.sendMessage("Plugin: \"" + plugins[index] + "\" wurde " + message[(deactivate) ? 1 : 0]);
+			if (deactivate)
+				sender.sendMessage("Plugin: \"" + plugins[index] + "\" wurde aktiviert");
+			else
+				sender.sendMessage("Plugin: \"" + plugins[index] + "\" wurde deaktiviert");
 			return true;
 		}
 		else

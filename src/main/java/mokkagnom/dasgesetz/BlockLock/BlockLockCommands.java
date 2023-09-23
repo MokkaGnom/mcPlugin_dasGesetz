@@ -60,7 +60,7 @@ public class BlockLockCommands implements TabExecutor
 			{
 				if (args[0].equalsIgnoreCase("showMenu"))
 				{
-					boolean bool = args[0].equalsIgnoreCase("true") || args[0].equalsIgnoreCase("1");
+					boolean bool = args[1].equalsIgnoreCase("true") || args[1].equalsIgnoreCase("1");
 					clManager.showMenu(p, bool);
 					if (bool)
 						BlockLockManager.sendMessage(p.getUniqueId(), "Menu active");

@@ -30,7 +30,7 @@ public class BlockLockCommands implements TabExecutor
 
 		if (clManager.isBlockLockable(b))
 		{
-			if (args.length == 1) // lock/unlock
+			if (args.length == 1) // lock/unlock/listFriends/disableMenu
 			{
 				if (args[0].equalsIgnoreCase("unlock"))
 				{
@@ -41,6 +41,10 @@ public class BlockLockCommands implements TabExecutor
 					clManager.lock(p, b);
 				}
 				else if (args[0].equalsIgnoreCase("listFriends"))
+				{
+					// TODO
+				}
+				else if(args[0].equalsIgnoreCase("disableMenu"))
 				{
 					// TODO
 				}

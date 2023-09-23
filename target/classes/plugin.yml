@@ -31,7 +31,7 @@ commands:
       - co
    blockLock:
       description: Manages targeted lockable object
-      usage: /blockLock <lock/unlock/addFriend/removeFriend/listFriends>
+      usage: /blockLock <lock/unlock/addFriend/removeFriend/listFriends/disableMenu>
       permission: dg.blockLockPermission
       aliases:
       - bl

@@ -1,6 +1,7 @@
 package mokkagnom.dasgesetz.Ping;
 
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -27,9 +28,11 @@ public class PingManager implements Listener
     {
         if (checkCooldown() && event.getPlayer().getInventory().getItemInOffHand().getType().equals(Material.STICK)
                 && (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)))
-        {
-            new Ping(this, event.getPlayer().getTargetBlock(null, 255), event.getPlayer().getName());
+                {
+            Block b = event.getPlayer().getTargetBlock(null, 255);
+            new Ping(this, b, event.getPlayer().getName());
             lastPingTime = System.currentTimeMillis();
+            event.getPlayer().sendMessage("You pinged at " + b.getX() + ", " + b.getY() + ", " + b.getZ());
         }
     }
 

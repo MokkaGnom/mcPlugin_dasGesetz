@@ -3,12 +3,10 @@ package mokkagnom.dasgesetz.BlockLock;
 // Bukkit:
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.data.type.Chest;
 import org.bukkit.block.data.type.Door;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 // Java:
@@ -19,7 +17,7 @@ import java.util.UUID;
 
 public class BlockLock implements Serializable
 {
-	private static final long serialVersionUID = -2027789457197784158L;
+	private static final long serialVersionUID = -7616202315683796612L;
 	private transient BlockLockManagerMenu blmm;
 	private int blockPosition[];
 	private String worldName;
@@ -84,11 +82,11 @@ public class BlockLock implements Serializable
 
 	/**
 	 * 
-	 * @return 0: No Chest | 1: Single | 2: Left | 3: Right
+	 * @return 0: No Chest | 1: Single | 2: Right | 3: Left
 	 */
-	public int checkIfDoubleChest()
+	static public int checkIfDoubleChest(Block b)
 	{
-		if (getBlock().getBlockData() instanceof Chest chest)
+		if (b.getBlockData() instanceof Chest chest)
 		{
 			Chest.Type type = chest.getType();
 			if (type.equals(Chest.Type.SINGLE))
@@ -99,6 +97,15 @@ public class BlockLock implements Serializable
 				return 3;
 		}
 		return 0;
+	}
+
+	/**
+	 * 
+	 * @return 0: No Chest | 1: Single | 2: Right | 3: Left
+	 */
+	public int checkIfDoubleChest()
+	{
+		return checkIfDoubleChest(getBlock());
 	}
 
 	public boolean checkIfDoor()

@@ -5,12 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.block.Chest;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.DoubleChest;
 import org.bukkit.block.data.type.Door;
 
 public class BlockLockUser implements Serializable
@@ -35,41 +31,12 @@ public class BlockLockUser implements Serializable
         blockLocks.add(bl);
         bl.createManagerMenu(blm);
 
-        int doubleChest = bl.checkIfDoubleChest();
-        if (doubleChest > 0)
-        {
-            try
-            {
-                /* if (doubleChest == 2)
-                {
-                    BlockLock bl2 = new BlockLock(b.getRelative(BlockFace.EAST), this);
-                    blockLocks.add(bl2);
-                    bl2.setBlockLockManagerMenu(bl.getBlockLockManagerMenu());
-                    bl.setSecondBlockLock(bl2);
-                    bl2.setSecondBlockLock(bl);
-                }
-                else if (doubleChest == 3)
-                {
-                    BlockLock bl2 = new BlockLock(b.getRelative(BlockFace.WEST), this);
-                    blockLocks.add(bl2);
-                    bl2.setBlockLockManagerMenu(bl.getBlockLockManagerMenu());
-                    bl.setSecondBlockLock(bl2);
-                    bl2.setSecondBlockLock(bl);
-                } */
-            }
-            catch (Exception e)
-            {
-                Bukkit.getLogger().severe("createBlockLock: Double Chest Exception: " + e.getLocalizedMessage());
-                BlockLockManager.sendMessage(uuid, "createBlockLock: Double Chest Exception: " + e.getLocalizedMessage(), true);
-            }
-        }
-        else if (bl.checkIfDoor())
+        if (bl.checkIfDoor())
         {
             try
             {
                 if (bl.getBlock().getRelative(0, 1, 0).getBlockData() instanceof Door)
                 {
-                    BlockLockManager.sendMessage(uuid, "Door");
                     BlockLock bl2 = new BlockLock(b.getRelative(0, 1, 0), this);
                     blockLocks.add(bl2);
                     bl2.setBlockLockManagerMenu(bl.getBlockLockManagerMenu());
@@ -78,7 +45,6 @@ public class BlockLockUser implements Serializable
                 }
                 else if (bl.getBlock().getRelative(0, -1, 0).getBlockData() instanceof Door)
                 {
-                    BlockLockManager.sendMessage(uuid, "Door");
                     BlockLock bl2 = new BlockLock(b.getRelative(0, -1, 0), this);
                     blockLocks.add(bl2);
                     bl2.setBlockLockManagerMenu(bl.getBlockLockManagerMenu());

@@ -89,9 +89,10 @@ public class BlockLockManager implements Listener
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event)
 	{
-		if (isBlockLockable(event.getBlockPlaced()))
+		Block b = event.getBlockPlaced();
+		if (isBlockLockable(b) && !checkIfNextBlockIsLocked(b, event.getPlayer().getUniqueId()))
 		{
-			lock(event.getPlayer(), event.getBlockPlaced());
+			lock(event.getPlayer(), b);
 		}
 	}
 
@@ -321,6 +322,30 @@ public class BlockLockManager implements Listener
 		BlockLockUser blu = new BlockLockUser(uuid);
 		players.add(blu);
 		return blu;
+	}
+
+	public boolean checkIfNextBlockIsLocked(Block b, UUID uuid)
+	{
+		BlockLock bl = null;
+		if (getBlockLock(b.getRelative(1, 0, 0)) != null)
+			bl = getBlockLock(b.getRelative(1, 0, 0));
+		else if (getBlockLock(b.getRelative(-1, 0, 0)) != null)
+			bl = getBlockLock(b.getRelative(-1, 0, 0));
+		else if (getBlockLock(b.getRelative(0, 1, 0)) != null)
+			bl = getBlockLock(b.getRelative(0, 1, 0));
+		else if (getBlockLock(b.getRelative(0, -1, 0)) != null)
+			bl = getBlockLock(b.getRelative(0, -1, 0));
+		else if (getBlockLock(b.getRelative(0, 0, 1)) != null)
+			bl = getBlockLock(b.getRelative(0, 0, 1));
+		else if (getBlockLock(b.getRelative(0, 0, -1)) != null)
+			bl = getBlockLock(b.getRelative(0, 0, -1));
+
+		if (bl == null)
+			return false;
+		else if (bl.checkIfPermissionToOpen(uuid))
+			return false;
+		else
+			return true;
 	}
 
 	public BlockLockUser getBlockLockUser(UUID uuid)

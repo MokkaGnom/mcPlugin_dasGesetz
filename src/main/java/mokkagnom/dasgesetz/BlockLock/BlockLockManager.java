@@ -90,9 +90,16 @@ public class BlockLockManager implements Listener
 	public void onBlockPlace(BlockPlaceEvent event)
 	{
 		Block b = event.getBlockPlaced();
-		if (isBlockLockable(b) && !checkIfNextBlockIsLocked(b, event.getPlayer().getUniqueId()))
+		if (isBlockLockable(b))
 		{
-			lock(event.getPlayer(), b);
+			if (!checkIfNextBlockIsLocked(b, event.getPlayer().getUniqueId()))
+			{
+				lock(event.getPlayer(), b);
+			}
+			else
+			{
+				event.setCancelled(true);
+			}
 		}
 	}
 

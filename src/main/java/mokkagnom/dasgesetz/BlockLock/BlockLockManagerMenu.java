@@ -128,7 +128,6 @@ public class BlockLockManagerMenu implements Listener
 		{
 			SkullMeta skull = (SkullMeta) friendsItems.get(index).getItemMeta();
 			blockLock.removeFriend(skull.getOwningPlayer().getUniqueId());
-			BlockLockManager.sendMessage(blockLock.getOwner().getUuid(), index + " Removed: " + skull.getOwningPlayer().getUniqueId());
 			friendsItems.remove(index);
 			updateFriendsInvItems();
 			return true;

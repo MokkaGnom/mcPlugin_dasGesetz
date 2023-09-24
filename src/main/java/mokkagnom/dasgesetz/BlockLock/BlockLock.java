@@ -3,10 +3,14 @@ package mokkagnom.dasgesetz.BlockLock;
 // Bukkit:
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Chest;
+import org.bukkit.block.DoubleChest;
 import org.bukkit.block.data.type.Door;
 import org.bukkit.block.data.type.TrapDoor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 // Java:
@@ -26,6 +30,7 @@ public class BlockLock implements Serializable
 	private boolean hopperLock;
 	private boolean redstoneLock;
 	private boolean blockBelowLock;
+	private BlockLock secondBlockLock;
 
 	public BlockLock(Block block, BlockLockUser owner)
 	{
@@ -41,6 +46,8 @@ public class BlockLock implements Serializable
 		this.hopperLock = true;
 		this.redstoneLock = true;
 		this.blockBelowLock = true;
+
+		secondBlockLock = null;
 	}
 
 	protected void finalize()
@@ -77,10 +84,23 @@ public class BlockLock implements Serializable
 		return false;
 	}
 
+	public boolean checkIfDoubleChest()
+	{
+		BlockState chestState = getBlock().getState();
+		if (chestState instanceof Chest)
+		{
+			Chest chest = (Chest) chestState;
+			Inventory inventory = chest.getInventory();
+			if (inventory instanceof DoubleChestInventory)
+				return true;
+		}
+		return false;
+	}
+
 	public boolean checkIfDoor()
 	{
-		Block b = Bukkit.getWorld(worldName).getBlockAt(blockPosition[0], blockPosition[1], blockPosition[2]);
-		return (b.getBlockData() instanceof Door || b.getBlockData() instanceof TrapDoor);
+		Block b = getBlock();
+		return (b.getBlockData() instanceof Door);
 	}
 
 	public boolean checkIfPermissionToOpen(UUID uuid)
@@ -207,6 +227,26 @@ public class BlockLock implements Serializable
 		}
 
 		return list;
+	}
+
+	public BlockLockManagerMenu getBlockLockManagerMenu()
+	{
+		return blmm;
+	}
+
+	public void setBlockLockManagerMenu(BlockLockManagerMenu blmm)
+	{
+		this.blmm = blmm;
+	}
+
+	public BlockLock getSecondBlockLock()
+	{
+		return secondBlockLock;
+	}
+
+	public void setSecondBlockLock(BlockLock bl)
+	{
+		secondBlockLock = bl;
 	}
 
 }

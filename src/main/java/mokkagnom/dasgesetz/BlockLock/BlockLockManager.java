@@ -4,7 +4,6 @@ package mokkagnom.dasgesetz.BlockLock;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -127,13 +126,13 @@ public class BlockLockManager implements Listener
 	{
 		try
 		{
-			for(BlockLockUser blu : players)
+			for (BlockLockUser blu : players)
 			{
 				List<BlockLock> blocklocks = new ArrayList<BlockLock>();
 				blocklocks.addAll(blu.getBlockLocks());
-				for(BlockLock bl : blocklocks)
+				for (BlockLock bl : blocklocks)
 				{
-					if(!isBlockLockable(bl.getBlock()))
+					if (!isBlockLockable(bl.getBlock()))
 					{
 						bl.unlock();
 					}
@@ -209,6 +208,11 @@ public class BlockLockManager implements Listener
 
 	public boolean lock(Player p, Block b)
 	{
+		if (!isBlockLockable(b))
+		{
+			BlockLockManager.sendMessage(p.getUniqueId(), "Block not supported");
+			return false;
+		}
 		BlockLock bl = getBlockLock(b);
 		if (bl == null && p.hasPermission("dg.blockLockPermission"))
 		{
@@ -463,12 +467,6 @@ public class BlockLockManager implements Listener
 		}
 		return 0;
 	}
-
-	/** Preventing the Block from being damaged */
-	/*
-	 * @EventHandler public void onBlockDamage(BlockDamageEvent event) { if (event.getBlock().getType().equals(Material.CHEST)) { if (getBlockLock(event.getBlock()) != null)
-	 * event.setCancelled(true); } }
-	 */
 
 	/** Preventing the Block from being blown up by Creeper, Wither or TNT */
 	@EventHandler

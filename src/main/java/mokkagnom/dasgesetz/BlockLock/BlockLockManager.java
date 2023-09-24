@@ -360,8 +360,12 @@ public class BlockLockManager implements Listener
 		{
 			for (BlockLock bl : i.getBlockLocks())
 			{
-				if (bl.getInventory().equals(inv))
-					return bl;
+				Inventory inven = bl.getInventory();
+				if (inven != null && inv != null)
+				{
+					if (inven.equals(inv))
+						return bl;
+				}
 			}
 		}
 		return null;

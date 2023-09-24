@@ -4,10 +4,8 @@ package mokkagnom.dasgesetz.BlockLock;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.Chest;
-import org.bukkit.block.DoubleChest;
+import org.bukkit.block.data.type.Chest;
 import org.bukkit.block.data.type.Door;
-import org.bukkit.block.data.type.TrapDoor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.DoubleChestInventory;
@@ -21,7 +19,7 @@ import java.util.UUID;
 
 public class BlockLock implements Serializable
 {
-	private static final long serialVersionUID = -6219146668662749418L;
+	private static final long serialVersionUID = -2027789457197784158L;
 	private transient BlockLockManagerMenu blmm;
 	private int blockPosition[];
 	private String worldName;
@@ -84,17 +82,23 @@ public class BlockLock implements Serializable
 		return false;
 	}
 
-	public boolean checkIfDoubleChest()
+	/**
+	 * 
+	 * @return 0: No Chest | 1: Single | 2: Left | 3: Right
+	 */
+	public int checkIfDoubleChest()
 	{
-		BlockState chestState = getBlock().getState();
-		if (chestState instanceof Chest)
+		if (getBlock().getBlockData() instanceof Chest chest)
 		{
-			Chest chest = (Chest) chestState;
-			Inventory inventory = chest.getInventory();
-			if (inventory instanceof DoubleChestInventory)
-				return true;
+			Chest.Type type = chest.getType();
+			if (type.equals(Chest.Type.SINGLE))
+				return 1;
+			else if (type.equals(Chest.Type.LEFT))
+				return 2;
+			else if (type.equals(Chest.Type.RIGHT))
+				return 3;
 		}
-		return false;
+		return 0;
 	}
 
 	public boolean checkIfDoor()
@@ -194,8 +198,8 @@ public class BlockLock implements Serializable
 	{
 		try
 		{
-			Block block = Bukkit.getServer().getWorld(worldName).getBlockAt(blockPosition[0], blockPosition[1], blockPosition[2]);
-			if (BlockLockManager.lockableBlocks.contains(block.getType()))
+			Block block = getBlock();
+			if (block.getState() instanceof InventoryHolder)
 			{
 				return ((InventoryHolder) block.getState()).getInventory();
 			}
@@ -203,6 +207,7 @@ public class BlockLock implements Serializable
 		}
 		catch (Exception e)
 		{
+			Bukkit.getLogger().severe("BL.getInventory: InventoryHolder Exception: " + e.getLocalizedMessage());
 			return null;
 		}
 	}

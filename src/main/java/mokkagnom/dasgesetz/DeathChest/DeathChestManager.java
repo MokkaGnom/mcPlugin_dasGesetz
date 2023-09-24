@@ -13,6 +13,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.world.WorldSaveEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.Bukkit;
 //Bukkit:
@@ -72,6 +73,16 @@ public class DeathChestManager implements Listener
 		return sendMessage(receiver, message, false);
 	}
 
+	@EventHandler
+	public void onWorldSave(WorldSaveEvent event)
+	{
+		for (DeathChest i : deathChests)
+		{
+			if (i.removeIfEmpty())
+				i.remove(true);
+		}
+	}
+
 	/** Creates a DeathChest */
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event)
@@ -117,8 +128,8 @@ public class DeathChestManager implements Listener
 				else
 				{
 					sendMessage(p.getUniqueId(), "No permission!");
-					//sendMessage(dc.getOwner().getUniqueId(), p.getName() + " tried to open your Death Chest at X:" + dc.getBlock().getLocation().getX() + " Y:"
-							//+ dc.getBlock().getLocation().getY() + " Z:" + dc.getBlock().getLocation().getZ());
+					// sendMessage(dc.getOwner().getUniqueId(), p.getName() + " tried to open your Death Chest at X:" + dc.getBlock().getLocation().getX() + " Y:"
+					// + dc.getBlock().getLocation().getY() + " Z:" + dc.getBlock().getLocation().getZ());
 				}
 			}
 		}
@@ -149,13 +160,13 @@ public class DeathChestManager implements Listener
 	public List<Block> getDeathChestBlocks()
 	{
 		List<Block> blocks = new ArrayList<Block>();
-		for(DeathChest i : deathChests)
+		for (DeathChest i : deathChests)
 		{
 			blocks.add(i.getBlock());
 		}
 		return blocks;
 	}
-	
+
 	/** Checks if block is a DeathChest and returns it, otherwise null */
 	public DeathChest getDeathChest(Block block)
 	{

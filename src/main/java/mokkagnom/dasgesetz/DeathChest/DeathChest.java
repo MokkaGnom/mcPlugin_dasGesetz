@@ -129,7 +129,12 @@ public class DeathChest
 
 	public void remove()
 	{
-		if (chestBlock.getType().equals(Material.CHEST))
+		remove(false);
+	}
+
+	public void remove(boolean override)
+	{
+		if (chestBlock.getType().equals(Material.CHEST) || override)
 		{
 			if (armorStand.isValid())
 			{

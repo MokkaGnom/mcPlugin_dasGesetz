@@ -31,6 +31,53 @@ public class BlockLockUser implements Serializable
         blockLocks.add(bl);
         bl.createManagerMenu(blm);
 
+        /* int doubleChestIndex = bl.checkIfDoubleChest();
+        BlockLockManager.sendMessage(uuid, "doubleChestIndex: " + doubleChestIndex);
+        if (doubleChestIndex > 1)
+        {
+            try
+            {
+                Block block = null;
+                if (doubleChestIndex == 2)
+                {
+                    if (BlockLock.checkIfDoubleChest(b.getRelative(1, 0, 0)) == 3)
+                        block = b.getRelative(1, 0, 0);
+                    else if (BlockLock.checkIfDoubleChest(b.getRelative(-1, 0, 0)) == 3)
+                        block = b.getRelative(-1, 0, 0);
+                    else if (BlockLock.checkIfDoubleChest(b.getRelative(0, 0, 1)) == 3)
+                        block = b.getRelative(0, 0, 1);
+                    else if (BlockLock.checkIfDoubleChest(b.getRelative(0, 0, -1)) == 3)
+                        block = b.getRelative(0, 0, -1);
+                }
+                else if (doubleChestIndex == 3)
+                {
+                    if (BlockLock.checkIfDoubleChest(b.getRelative(1, 0, 0)) == 2)
+                        block = b.getRelative(1, 0, 0);
+                    else if (BlockLock.checkIfDoubleChest(b.getRelative(-1, 0, 0)) == 2)
+                        block = b.getRelative(-1, 0, 0);
+                    else if (BlockLock.checkIfDoubleChest(b.getRelative(0, 0, 1)) == 2)
+                        block = b.getRelative(0, 0, 1);
+                    else if (BlockLock.checkIfDoubleChest(b.getRelative(0, 0, -1)) == 2)
+                        block = b.getRelative(0, 0, -1);
+                }
+
+                if (block != null)
+                {
+                    BlockLockManager.sendMessage(uuid, "Double Chest: " + block.getLocation().toString());
+                    BlockLock bl2 = new BlockLock(block, this);
+                    blockLocks.add(bl2);
+                    bl2.setBlockLockManagerMenu(bl.getBlockLockManagerMenu());
+                    bl.setSecondBlockLock(bl2);
+                    bl2.setSecondBlockLock(bl);
+                }
+            }
+            catch (Exception e)
+            {
+                Bukkit.getLogger().severe("createBlockLock: Double Chest Exception: " + e.getLocalizedMessage());
+                BlockLockManager.sendMessage(uuid, "createBlockLock: Double Chest Exception: " + e.getLocalizedMessage(), true);
+            }
+        } */
+
         if (bl.checkIfDoor())
         {
             try

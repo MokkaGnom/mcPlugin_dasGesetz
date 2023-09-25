@@ -76,10 +76,18 @@ public class DeathChestManager implements Listener
 	@EventHandler
 	public void onWorldSave(WorldSaveEvent event)
 	{
-		for (DeathChest i : deathChests)
+		if (event.getWorld().getName().equals(Bukkit.getWorlds().get(0).getName()))
 		{
-			if (i.removeIfEmpty())
-				i.remove(true);
+			List<DeathChest> list = new ArrayList<DeathChest>();
+			for (DeathChest i : deathChests)
+			{
+				if (i.removeIfEmpty())
+					i.remove(true);
+				else
+					list.add(i);
+			}
+			deathChests.clear();
+			deathChests.addAll(list);
 		}
 	}
 

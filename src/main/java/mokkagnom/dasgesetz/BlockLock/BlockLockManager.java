@@ -83,7 +83,8 @@ public class BlockLockManager implements Listener
 	@EventHandler
 	public void onWorldSave(WorldSaveEvent event)
 	{
-		saveToFile();
+		if (event.getWorld().getName().equals(Bukkit.getWorlds().get(0).getName()))
+			saveToFile();
 	}
 
 	@EventHandler

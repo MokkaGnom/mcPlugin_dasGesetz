@@ -82,7 +82,8 @@ public class DeathChest
 			for (ItemStack i : inventory.getContents())
 			{
 				if (i == null)
-					break;
+					continue;
+
 				HashMap<Integer, ItemStack> drop = player.getInventory().addItem(i);
 				player.updateInventory();
 
@@ -115,16 +116,30 @@ public class DeathChest
 
 	public boolean removeIfEmpty()
 	{
+		boolean empty = true;
+
 		for (ItemStack item : inventory.getContents())
 		{
 			if (item != null)
 			{
-				return false;
+				empty = false;
+				break;
 			}
 		}
 
-		remove();
-		return true;
+		if (!chestBlock.getType().equals(Material.CHEST))
+		{
+			remove(true);
+			return true;
+		}
+		else if (empty)
+		{
+			remove();
+			return true;
+		}
+		else
+			return false;
+
 	}
 
 	public void remove()
@@ -136,14 +151,22 @@ public class DeathChest
 	{
 		if (chestBlock.getType().equals(Material.CHEST) || override)
 		{
-			if (armorStand.isValid())
+			try
 			{
-				armorStand.remove();
+				if (armorStand.isValid() || override)
+				{
+					armorStand.remove();
+				}
+				inventory.clear();
+				removeTask.cancel();
+				if (chestBlock.getType().equals(Material.CHEST))
+					chestBlock.setType(Material.AIR);
 			}
-			inventory.clear();
-			removeTask.cancel();
-			chestBlock.setType(Material.AIR);
-
+			catch (Exception e)
+			{
+				Bukkit.getLogger().severe("DeathChest: remove exception (override: " + override + "): " + e.getLocalizedMessage());
+				return;
+			}
 			DeathChestManager.sendMessage(owner, "Removed at X:" + chestBlock.getLocation().getX() + " Y:" + chestBlock.getLocation().getY() + " Z:" + chestBlock.getLocation().getZ());
 			Bukkit.getConsoleSender().sendMessage("Removed Death Chest from " + owner.toString() + " at X:" + chestBlock.getLocation().getX() + " Y:" + chestBlock.getLocation().getY()
 					+ " Z:" + chestBlock.getLocation().getZ());

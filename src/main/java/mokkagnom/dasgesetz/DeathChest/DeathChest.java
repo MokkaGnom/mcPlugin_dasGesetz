@@ -153,10 +153,7 @@ public class DeathChest
 		{
 			try
 			{
-				if (armorStand.isValid() || override)
-				{
-					armorStand.remove();
-				}
+				armorStand.remove();
 				inventory.clear();
 				removeTask.cancel();
 				if (chestBlock.getType().equals(Material.CHEST))

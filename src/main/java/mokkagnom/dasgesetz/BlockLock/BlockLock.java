@@ -74,8 +74,16 @@ public class BlockLock implements Serializable
 	{
 		if (checkIfPermissionToOpen(p.getUniqueId()))
 		{
-			blmm.open(p);
-			return true;
+			try
+			{
+				blmm.open(p);
+				return true;
+			}
+			catch(Exception e)
+			{
+				Bukkit.getLogger().severe("BlockLock: openManagerInventory(Player p): blmm.open(Player p) Exception: " + e.getLocalizedMessage());
+				return false;
+			}
 		}
 		return false;
 	}

@@ -98,8 +98,10 @@ public class DeathChestManager implements Listener
 		Player p = event.getEntity();
 		if (p.hasPermission("dg.deathChestPermission"))
 		{
-			deathChests.add(new DeathChest(event.getEntity(), event.getDrops(), main, timer, dropItems));
-			event.getDrops().clear();
+			DeathChest dc = new DeathChest(p, event.getDrops(), main, timer, dropItems);
+			deathChests.add(dc);
+			if (dc.equals(deathChests.get(deathChests.size() - 1)))
+				event.getDrops().clear();
 		}
 		else
 		{

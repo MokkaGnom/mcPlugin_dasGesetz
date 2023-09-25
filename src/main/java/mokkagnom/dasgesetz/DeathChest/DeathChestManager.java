@@ -21,6 +21,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.entity.Wither;
 import org.bukkit.block.Block;
 //Java:
 import java.util.List;
@@ -257,13 +258,13 @@ public class DeathChestManager implements Listener
 		}
 	}
 
-	/** Preventing the DeathChest from being blown up by a Creeper or TNT */
+	/** Preventing the DeathChest from being blown up by a Creeper, Wither or TNT */
 	@EventHandler
 	public void onEntityExplode(EntityExplodeEvent event)
 	{
 		try
 		{
-			if (event.getEntity() instanceof Creeper || event.getEntity() instanceof TNTPrimed)
+			if (event.getEntity() instanceof Creeper || event.getEntity() instanceof TNTPrimed || event.getEntity() instanceof Wither)
 			{
 				event.blockList().removeAll(getDeathChestBlocks());
 			}

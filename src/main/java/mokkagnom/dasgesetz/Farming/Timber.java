@@ -11,6 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Leaves;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -86,7 +87,19 @@ public class Timber implements Listener
 			logBlocks.remove(logBlocks.size() - 1);
 		}
 
-		im.setDamage(im.getDamage() + logBlocks.size());
+		int damage = logBlocks.size();
+		if (item.containsEnchantment(Enchantment.DURABILITY))
+		{
+			double enchChance = 100 / (item.getEnchantmentLevel(Enchantment.DURABILITY) + 1);
+			double chance = 0;
+			for (int i = 0; i < logBlocks.size(); i++)
+			{
+				chance = Math.floor(Math.random() * 101);
+				if (chance < enchChance)
+					damage--;
+			}
+		}
+		im.setDamage(im.getDamage() + damage);
 		item.setItemMeta(im);
 		p.getInventory().setItemInMainHand(item);
 

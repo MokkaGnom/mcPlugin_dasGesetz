@@ -38,7 +38,8 @@ public class Manager implements TabExecutor
 	{
 		this.main = main;
 		commandListener = new Listener[] { new blockLogger(), new Timber(main.getConfig().getBoolean("Timber.BreakLeaves"), main.getConfig().getInt("Timber.BreakLeavesRadius")),
-				new DeathChestManager(main, 12000, true), new BlockLockManager(this), new Messages(main.getConfig().getBoolean("Messages.ShowOPJoinMessage")), new EasyFarming(),
+				new DeathChestManager(main, main.getConfig().getInt("DeathChest.DespawnInTicks"), main.getConfig().getBoolean("DeathChest.DespawnDropping")), new BlockLockManager(this),
+				new Messages(main.getConfig().getBoolean("Messages.ShowOPJoinMessage")), new EasyFarming(),
 				new PingManager(main, main.getConfig().getInt("Ping.Duration"), main.getConfig().getInt("Ping.Cooldown")) };
 		commandExe = new TabExecutor[] { new dasGesetz(), new weatherClear(), new coords(), new BlockLockCommands((BlockLockManager) commandListener[3]),
 				new HomeCommands(this, main.getConfig().getInt("Homes.MaxHomes")) };

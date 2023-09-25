@@ -65,7 +65,7 @@ public class DeathChest
 		}
 
 		// Creating automated removal
-		removeTask = new DeathChestRemoveTask(chestBlock, armorStand, owner, dropItems);
+		removeTask = new DeathChestRemoveTask(this, dropItems);
 		removeTask.runTaskLater(main, timer);
 
 		// Message to player

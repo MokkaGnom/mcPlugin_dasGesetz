@@ -153,6 +153,7 @@ public class DeathChest
 		{
 			try
 			{
+				chestBlock.getChunk().load();
 				armorStand.remove();
 				inventory.clear();
 				removeTask.cancel();

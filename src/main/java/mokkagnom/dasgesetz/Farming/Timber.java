@@ -129,6 +129,9 @@ public class Timber implements Listener
 		int logBreakIndex = -1, axeUsedIndex = -1;
 		Player p = event.getPlayer();
 
+		if (p.isSneaking())
+			return;
+
 		// Checking for axe
 		for (int i = 0; i < timberAxeMaterial.length; i++)
 		{

@@ -79,16 +79,10 @@ public class DeathChestManager implements Listener
 	{
 		if (event.getWorld().getName().equals(Bukkit.getWorlds().get(0).getName()))
 		{
-			List<DeathChest> list = new ArrayList<DeathChest>();
-			for (DeathChest i : deathChests)
-			{
-				if (i.removeIfEmpty())
-					i.remove(true);
-				else
-					list.add(i);
-			}
-			deathChests.clear();
-			deathChests.addAll(list);
+			List<DeathChest> oldList = new ArrayList<DeathChest>();
+			oldList.addAll(deathChests);
+
+			for (DeathChest i : oldList) i.removeIfEmpty(true);
 		}
 	}
 
@@ -99,7 +93,7 @@ public class DeathChestManager implements Listener
 		Player p = event.getEntity();
 		if (p.hasPermission("dg.deathChestPermission"))
 		{
-			DeathChest dc = new DeathChest(p, event.getDrops(), main, timer, dropItems);
+			DeathChest dc = new DeathChest(this, p, event.getDrops(), main, timer, dropItems);
 			deathChests.add(dc);
 			if (dc.equals(deathChests.get(deathChests.size() - 1)))
 				event.getDrops().clear();
@@ -157,6 +151,13 @@ public class DeathChestManager implements Listener
 				i.removeIfEmpty();
 			}
 		}
+	}
+
+	public boolean removeDeathChest(DeathChest dc)
+	{
+		if (dc != null)
+			return deathChests.remove(dc);
+		return false;
 	}
 
 	/** Removing all DeathChests (this will drop their contents, just like timeout) */

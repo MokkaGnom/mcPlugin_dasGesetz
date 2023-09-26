@@ -208,6 +208,7 @@ public class BlockLockManager implements Listener
 			o.close();
 			f.close();
 			Bukkit.getConsoleSender().sendMessage("BlockLock loaded " + players.size() + "/" + size + " BlockLockPlayers");
+			Bukkit.getConsoleSender().sendMessage("BlockLock loaded " + getAllBlockLockBlocks().size() + "/" + size + " BlockLocks");
 			return true;
 		}
 		catch (Exception e)

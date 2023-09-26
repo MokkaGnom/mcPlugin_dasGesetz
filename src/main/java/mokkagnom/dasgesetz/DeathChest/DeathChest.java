@@ -4,10 +4,12 @@ import org.bukkit.Bukkit;
 //Bukkit:
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.block.Block;
 
 import java.util.ArrayList;
@@ -21,14 +23,15 @@ import mokkagnom.dasgesetz.Main;
 
 public class DeathChest
 {
+	private DeathChestManager dcManager;
 	private Block chestBlock;
-	private ArmorStand armorStand;
 	private Inventory inventory;
 	private UUID owner;
 	private DeathChestRemoveTask removeTask;
 
-	public DeathChest(Player p, List<ItemStack> items, Main main, long timer, boolean dropItems)
+	public DeathChest(DeathChestManager dcm, Player p, List<ItemStack> items, Main main, long timer, boolean dropItems)
 	{
+		this.dcManager = dcm;
 		owner = p.getUniqueId();
 		chestBlock = p.getLocation().getBlock();
 
@@ -41,7 +44,7 @@ public class DeathChest
 		chestBlock.setType(Material.CHEST);
 
 		// Creating ArmorStand for visualisation:
-		armorStand = (ArmorStand) chestBlock.getWorld().spawnEntity(chestBlock.getLocation().add(0.5, 0, 0.5), EntityType.ARMOR_STAND);
+		ArmorStand armorStand = (ArmorStand) chestBlock.getWorld().spawnEntity(chestBlock.getLocation().add(0.5, 0, 0.5), EntityType.ARMOR_STAND);
 		armorStand.setVisible(false);
 		armorStand.setVisualFire(false);
 		armorStand.setCollidable(false);
@@ -51,6 +54,7 @@ public class DeathChest
 		armorStand.setSmall(true);
 		armorStand.setCustomNameVisible(true);
 		armorStand.setCustomName(p.getName() + "'s Deathchest");
+		armorStand.setMetadata("DeathChest", new FixedMetadataValue(main, chestBlock.getLocation().toString()));
 
 		// Creating Inventory:
 		int invSize = 9;
@@ -70,6 +74,7 @@ public class DeathChest
 
 		// Message to player
 		DeathChestManager.sendMessage(owner, "Created at (" + chestBlock.getX() + ", " + chestBlock.getY() + ", " + chestBlock.getZ() + ") T: " + timer / 20 + "s");
+		Bukkit.getConsoleSender().sendMessage("Created Death Chest for " + owner.toString() + " at (" + chestBlock.getX() + ", " + chestBlock.getY() + ", " + chestBlock.getZ() + ")");
 	}
 
 	public boolean collect()
@@ -116,6 +121,11 @@ public class DeathChest
 
 	public boolean removeIfEmpty()
 	{
+		return removeIfEmpty(false);
+	}
+
+	public boolean removeIfEmpty(boolean override)
+	{
 		boolean empty = true;
 
 		for (ItemStack item : inventory.getContents())
@@ -142,33 +152,44 @@ public class DeathChest
 
 	}
 
-	public void remove()
+	public boolean remove()
 	{
-		remove(false);
+		return remove(false);
 	}
 
-	public void remove(boolean override)
+	public boolean remove(boolean override)
 	{
 		if (chestBlock.getType().equals(Material.CHEST) || override)
 		{
 			try
 			{
-				chestBlock.getChunk().load();
-				armorStand.remove();
+				for (Entity i : chestBlock.getChunk().getEntities())
+				{
+					if (i.hasMetadata("DeathChest") && i.getMetadata("DeathChest").get(0).asString().equals(chestBlock.getLocation().toString()))
+					{
+						i.remove();
+						break;
+					}
+				}
+
 				inventory.clear();
 				removeTask.cancel();
+				removeTask = null;
 				if (chestBlock.getType().equals(Material.CHEST))
 					chestBlock.setType(Material.AIR);
+				dcManager.removeDeathChest(this);
 			}
 			catch (Exception e)
 			{
 				Bukkit.getLogger().severe("DeathChest: remove exception (override: " + override + "): " + e.getLocalizedMessage());
-				return;
+				return false;
 			}
-			DeathChestManager.sendMessage(owner, "Removed at X:" + chestBlock.getLocation().getX() + " Y:" + chestBlock.getLocation().getY() + " Z:" + chestBlock.getLocation().getZ());
+			DeathChestManager.sendMessage(owner, "Removed at (" + chestBlock.getX() + ", " + chestBlock.getY() + ", " + chestBlock.getZ() + ")");
 			Bukkit.getConsoleSender().sendMessage("Removed Death Chest from " + owner.toString() + " at X:" + chestBlock.getLocation().getX() + " Y:" + chestBlock.getLocation().getY()
 					+ " Z:" + chestBlock.getLocation().getZ());
+			return true;
 		}
+		return false;
 	}
 
 	public boolean checkIfOwner(Player p)

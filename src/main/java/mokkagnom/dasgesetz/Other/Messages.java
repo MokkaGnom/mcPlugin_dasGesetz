@@ -11,17 +11,22 @@ import java.util.Calendar;
 
 public class Messages implements Listener
 {
-	private boolean showOPJoinMessage;
+	private String message;
 
-	public Messages(boolean showOPJoinMessage)
+	public Messages(String message)
 	{
-		this.showOPJoinMessage = showOPJoinMessage;
+		this.message = message;
 	}
 
 	@EventHandler
 	public void OnPlayerJoin(PlayerJoinEvent event)
 	{
-		Player p = event.getPlayer();
+		// greetPlayer(event.getPlayer());
+		event.getPlayer().sendMessage(message);
+	}
+
+	public void greetPlayer(Player p)
+	{
 		String message = "";
 		int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 
@@ -47,10 +52,6 @@ public class Messages implements Listener
 		}
 
 		p.sendMessage(message + " " + p.getName() + "!");
-
-		if (showOPJoinMessage && p.isOp())
-		{
-			Bukkit.broadcastMessage(p.getName() + " hat den Server betreten!");
-		}
 	}
+
 }

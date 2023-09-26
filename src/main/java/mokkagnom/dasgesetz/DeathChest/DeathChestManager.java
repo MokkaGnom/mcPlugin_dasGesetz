@@ -144,7 +144,9 @@ public class DeathChestManager implements Listener
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent event)
 	{
-		for (DeathChest i : deathChests)
+		List<DeathChest> list = new ArrayList<DeathChest>();
+		list.addAll(deathChests);
+		for (DeathChest i : list)
 		{
 			if (event.getInventory().equals(i.getChestInventory()))
 			{
@@ -163,10 +165,13 @@ public class DeathChestManager implements Listener
 	/** Removing all DeathChests (this will drop their contents, just like timeout) */
 	public void removeAllDeathChests()
 	{
-		for (DeathChest i : deathChests)
+		List<DeathChest> list = new ArrayList<DeathChest>();
+		list.addAll(deathChests);
+		for (DeathChest i : list)
 		{
 			i.remove();
 		}
+		deathChests.clear();
 	}
 
 	public List<Block> getDeathChestBlocks()

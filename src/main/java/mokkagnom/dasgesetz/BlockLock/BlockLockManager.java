@@ -447,7 +447,7 @@ public class BlockLockManager implements Listener
 	// Protecting Block:
 
 	/** Preventing BlockLocks (example: doors, hoppers) to be activated by Redstone */
-	@EventHandler
+	/* @EventHandler
 	public void onRedstone(BlockRedstoneEvent event)
 	{
 		BlockLock bl = getBlockLock(event.getBlock());
@@ -455,7 +455,7 @@ public class BlockLockManager implements Listener
 		{
 			event.setNewCurrent(event.getOldCurrent());
 		}
-	}
+	} */
 
 	/** Preventing anyone from breaking the Block, or the block below */
 	@EventHandler
@@ -472,29 +472,29 @@ public class BlockLockManager implements Listener
 				else
 					event.setCancelled(true);
 			}
-			else
+			/* else
 			{
 				int cibb = checkIfBlockBelow(b, event.getPlayer());
 				if (cibb == 1)
 					event.setCancelled(true);
 				else if (cibb == 2 && getBlockLock(b.getRelative(0, 1, 0)).checkIfDoor())
 					unlock(event.getPlayer(), b.getRelative(0, 1, 0));
-			}
+			} */
 
 		}
-		else
+		/* else
 		{
 			int cibb = checkIfBlockBelow(b, event.getPlayer());
 			if (cibb == 1)
 				event.setCancelled(true);
 			else if (cibb == 2 && getBlockLock(b.getRelative(0, 1, 0)).checkIfDoor())
 				unlock(event.getPlayer(), b.getRelative(0, 1, 0));
-		}
+		} */
 
 	}
 
 	/** Checks if Block b is below a BlockLock (0/1) and if Player p has permission to open it (1/2) */
-	public int checkIfBlockBelow(Block b, Player p)
+	/* public int checkIfBlockBelow(Block b, Player p)
 	{
 		Block b2 = b.getRelative(0, 1, 0);
 		BlockLock bl2 = getBlockLock(b2);
@@ -506,7 +506,7 @@ public class BlockLockManager implements Listener
 				return 1;
 		}
 		return 0;
-	}
+	} */
 
 	/** Preventing the Block from being blown up by Creeper, Wither or TNT */
 	@EventHandler
@@ -526,7 +526,7 @@ public class BlockLockManager implements Listener
 	}
 
 	/** Preventing anyone(hoppers, etc) than the player from grabbing items from the Container */
-	@EventHandler
+	/* @EventHandler
 	public void onInventoryMoveItem(InventoryMoveItemEvent event)
 	{
 		BlockLock source = getBlockLockFromInventory(event.getSource());
@@ -536,6 +536,6 @@ public class BlockLockManager implements Listener
 		{
 			event.setCancelled(true);
 		}
-	}
+	} */
 
 }

@@ -202,7 +202,9 @@ public class BlockLockManager implements Listener
 
 			for (int i = 0; i < size; i++)
 			{
-				players.add((BlockLockUser) o.readObject());
+				BlockLockUser blu = (BlockLockUser) o.readObject();
+				blu.createAllBlockLockManagerMenus(this);
+				players.add(blu);
 			}
 
 			o.close();
@@ -447,15 +449,10 @@ public class BlockLockManager implements Listener
 	// Protecting Block:
 
 	/** Preventing BlockLocks (example: doors, hoppers) to be activated by Redstone */
-	/* @EventHandler
-	public void onRedstone(BlockRedstoneEvent event)
-	{
-		BlockLock bl = getBlockLock(event.getBlock());
-		if (bl != null && bl.isRedstoneLock())
-		{
-			event.setNewCurrent(event.getOldCurrent());
-		}
-	} */
+	/*
+	 * @EventHandler public void onRedstone(BlockRedstoneEvent event) { BlockLock bl = getBlockLock(event.getBlock()); if (bl != null && bl.isRedstoneLock()) {
+	 * event.setNewCurrent(event.getOldCurrent()); } }
+	 */
 
 	/** Preventing anyone from breaking the Block, or the block below */
 	@EventHandler
@@ -472,41 +469,24 @@ public class BlockLockManager implements Listener
 				else
 					event.setCancelled(true);
 			}
-			/* else
-			{
-				int cibb = checkIfBlockBelow(b, event.getPlayer());
-				if (cibb == 1)
-					event.setCancelled(true);
-				else if (cibb == 2 && getBlockLock(b.getRelative(0, 1, 0)).checkIfDoor())
-					unlock(event.getPlayer(), b.getRelative(0, 1, 0));
-			} */
+			/*
+			 * else { int cibb = checkIfBlockBelow(b, event.getPlayer()); if (cibb == 1) event.setCancelled(true); else if (cibb == 2 && getBlockLock(b.getRelative(0, 1, 0)).checkIfDoor())
+			 * unlock(event.getPlayer(), b.getRelative(0, 1, 0)); }
+			 */
 
 		}
-		/* else
-		{
-			int cibb = checkIfBlockBelow(b, event.getPlayer());
-			if (cibb == 1)
-				event.setCancelled(true);
-			else if (cibb == 2 && getBlockLock(b.getRelative(0, 1, 0)).checkIfDoor())
-				unlock(event.getPlayer(), b.getRelative(0, 1, 0));
-		} */
+		/*
+		 * else { int cibb = checkIfBlockBelow(b, event.getPlayer()); if (cibb == 1) event.setCancelled(true); else if (cibb == 2 && getBlockLock(b.getRelative(0, 1, 0)).checkIfDoor())
+		 * unlock(event.getPlayer(), b.getRelative(0, 1, 0)); }
+		 */
 
 	}
 
 	/** Checks if Block b is below a BlockLock (0/1) and if Player p has permission to open it (1/2) */
-	/* public int checkIfBlockBelow(Block b, Player p)
-	{
-		Block b2 = b.getRelative(0, 1, 0);
-		BlockLock bl2 = getBlockLock(b2);
-		if (bl2 != null && bl2.isBlockBelowLock())
-		{
-			if (bl2.checkIfPermissionToOpen(p.getUniqueId()))
-				return 2;
-			else
-				return 1;
-		}
-		return 0;
-	} */
+	/*
+	 * public int checkIfBlockBelow(Block b, Player p) { Block b2 = b.getRelative(0, 1, 0); BlockLock bl2 = getBlockLock(b2); if (bl2 != null && bl2.isBlockBelowLock()) { if
+	 * (bl2.checkIfPermissionToOpen(p.getUniqueId())) return 2; else return 1; } return 0; }
+	 */
 
 	/** Preventing the Block from being blown up by Creeper, Wither or TNT */
 	@EventHandler
@@ -526,16 +506,10 @@ public class BlockLockManager implements Listener
 	}
 
 	/** Preventing anyone(hoppers, etc) than the player from grabbing items from the Container */
-	/* @EventHandler
-	public void onInventoryMoveItem(InventoryMoveItemEvent event)
-	{
-		BlockLock source = getBlockLockFromInventory(event.getSource());
-		BlockLock dest = getBlockLockFromInventory(event.getDestination());
-		if ((source != null && !event.getDestination().getType().equals(InventoryType.PLAYER) && source.isHopperLock()) // Prevents Hopper, etc. from PUTTING items IN the chest
-				|| (dest != null && dest.isHopperLock())) // Prevents Hopper, etc. from REMOVING items FROM the chest
-		{
-			event.setCancelled(true);
-		}
-	} */
+	/*
+	 * @EventHandler public void onInventoryMoveItem(InventoryMoveItemEvent event) { BlockLock source = getBlockLockFromInventory(event.getSource()); BlockLock dest =
+	 * getBlockLockFromInventory(event.getDestination()); if ((source != null && !event.getDestination().getType().equals(InventoryType.PLAYER) && source.isHopperLock()) // Prevents Hopper,
+	 * etc. from PUTTING items IN the chest || (dest != null && dest.isHopperLock())) // Prevents Hopper, etc. from REMOVING items FROM the chest { event.setCancelled(true); } }
+	 */
 
 }

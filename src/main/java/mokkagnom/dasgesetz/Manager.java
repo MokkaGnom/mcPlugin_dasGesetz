@@ -13,6 +13,7 @@ import mokkagnom.dasgesetz.BlockLock.BlockLockManager;
 import mokkagnom.dasgesetz.DeathChest.*;
 import mokkagnom.dasgesetz.Farming.EasyFarming;
 import mokkagnom.dasgesetz.Farming.Timber;
+import mokkagnom.dasgesetz.Ping.PingCommands;
 import mokkagnom.dasgesetz.Ping.PingManager;
 import mokkagnom.dasgesetz.Home.HomeCommands;
 import mokkagnom.dasgesetz.Other.Messages;
@@ -30,7 +31,7 @@ public class Manager implements TabExecutor
 {
 	private Main main = null;
 	private final String[] plugins = { "DasGesetz", "WeatherClear", "Coords", "BlockLogger", "Timber", "DeathChest", "BlockLock", "Messages", "Home", "EasyFarming", "Ping" };
-	private final String[] commands = { "dasGesetz", "weatherClear", "coords", "blockLock", "home" };
+	private final String[] commands = { "dasGesetz", "weatherClear", "coords", "blockLock", "home", "ping" };
 	private final TabExecutor[] commandExe;
 	private final Listener[] commandListener;
 
@@ -41,8 +42,9 @@ public class Manager implements TabExecutor
 				new DeathChestManager(main, main.getConfig().getInt("DeathChest.DespawnInTicks"), main.getConfig().getBoolean("DeathChest.DespawnDropping")), new BlockLockManager(this),
 				new Messages(main.getConfig().getString("Messages.Message")), new EasyFarming(),
 				new PingManager(main, main.getConfig().getInt("Ping.Duration"), main.getConfig().getInt("Ping.Cooldown")) };
+
 		commandExe = new TabExecutor[] { new dasGesetz(), new weatherClear(), new coords(), new BlockLockCommands((BlockLockManager) commandListener[3]),
-				new HomeCommands(this, main.getConfig().getInt("Homes.MaxHomes")) };
+				new HomeCommands(this, main.getConfig().getInt("Homes.MaxHomes")), new PingCommands((PingManager) commandListener[6]) };
 	}
 
 	@Override
@@ -171,6 +173,8 @@ public class Manager implements TabExecutor
 
 					case 10: // Ping:
 						main.getServer().getPluginManager().registerEvents(commandListener[6], main);
+						main.getCommand(commands[5]).setExecutor(commandExe[5]);
+						main.getCommand(commands[5]).setTabCompleter(commandExe[5]);
 						break;
 					}
 				}

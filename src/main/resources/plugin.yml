@@ -1,6 +1,6 @@
 main: mokkagnom.dasgesetz.Main
 name: dasGesetz
-version: 3.5.2
+version: 3.5.8
 api-version: 1.20
 author: MokkaGnom
 description: Das Gesetz. Timber, EasyFarming, DeathChest, BlockLock, Home, Ping
@@ -41,6 +41,12 @@ commands:
       permission: dg.homePermission
       aliases:
       - h
+   ping:
+      description: Sets color of ping
+      usage: /ping setColor <colorcode>
+      permission: dg.pingPermission
+      aliasses:
+      - p
 permissions:
    dg.dgManagerPermission:
       description: Allows a Player to use the Manager

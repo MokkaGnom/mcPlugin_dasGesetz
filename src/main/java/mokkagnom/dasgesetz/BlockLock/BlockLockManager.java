@@ -41,9 +41,10 @@ public class BlockLockManager implements Listener
 			Material.CRIMSON_TRAPDOOR, Material.DARK_OAK_DOOR, Material.DARK_OAK_TRAPDOOR, Material.IRON_DOOR, Material.IRON_TRAPDOOR, Material.JUNGLE_DOOR, Material.JUNGLE_TRAPDOOR,
 			Material.MANGROVE_DOOR, Material.MANGROVE_TRAPDOOR, Material.OAK_DOOR, Material.OAK_TRAPDOOR, Material.SPRUCE_DOOR, Material.SPRUCE_TRAPDOOR, Material.WARPED_DOOR,
 			Material.WARPED_TRAPDOOR, Material.CHEST, Material.TRAPPED_CHEST, Material.HOPPER, Material.FURNACE, Material.BLAST_FURNACE, Material.SMOKER, Material.BARREL,
-			Material.OAK_FENCE_GATE, Material.BIRCH_FENCE_GATE, Material.ACACIA_FENCE_GATE, Material.BAMBOO_FENCE_GATE, Material.CHERRY_FENCE_GATE, Material.JUNGLE_FENCE_GATE,
-			Material.SPRUCE_FENCE_GATE, Material.WARPED_FENCE_GATE, Material.CRIMSON_FENCE_GATE, Material.DARK_OAK_FENCE_GATE, Material.MANGROVE_FENCE_GATE);
+			Material.BREWING_STAND, Material.OAK_FENCE_GATE, Material.BIRCH_FENCE_GATE, Material.ACACIA_FENCE_GATE, Material.BAMBOO_FENCE_GATE, Material.CHERRY_FENCE_GATE,
+			Material.JUNGLE_FENCE_GATE, Material.SPRUCE_FENCE_GATE, Material.WARPED_FENCE_GATE, Material.CRIMSON_FENCE_GATE, Material.DARK_OAK_FENCE_GATE, Material.MANGROVE_FENCE_GATE);
 
+	public static final String blockLockKey = "BlockLock";
 	private Manager manager;
 	private File saveFile;
 	private List<BlockLockUser> players;
@@ -111,11 +112,12 @@ public class BlockLockManager implements Listener
 	{
 		if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
 		{
-			BlockLock bl = getBlockLock(event.getClickedBlock());
 			Player p = event.getPlayer();
+			Block block = event.getClickedBlock();
 
-			if (bl != null)
+			if (block.hasMetadata(blockLockKey))
 			{
+				BlockLock bl = getBlockLock(block);
 				if (bl.checkIfPermissionToOpen(p.getUniqueId()))
 				{
 					if (p.isSneaking() && getBlockLockUser(p.getUniqueId()).getUseSneakMenu())
@@ -145,7 +147,7 @@ public class BlockLockManager implements Listener
 				{
 					if (!isBlockLockable(bl.getBlock()))
 					{
-						bl.unlock();
+						bl.unlock(this);
 					}
 				}
 			}
@@ -227,8 +229,8 @@ public class BlockLockManager implements Listener
 			BlockLockManager.sendMessage(p.getUniqueId(), "Block not supported");
 			return false;
 		}
-		BlockLock bl = getBlockLock(b);
-		if (bl == null && p.hasPermission("dg.blockLockPermission"))
+
+		if (!b.hasMetadata(blockLockKey) && p.hasPermission("dg.blockLockPermission"))
 		{
 			getBlockLockUser(p.getUniqueId()).createBlockLock(b, this);
 			sendMessage(p.getUniqueId(), b.getType().toString() + " locked!");
@@ -240,12 +242,12 @@ public class BlockLockManager implements Listener
 
 	public boolean unlock(Player p, Block b)
 	{
-		BlockLock bl = getBlockLock(b);
-		if (bl != null)
+		if (b.hasMetadata(blockLockKey))
 		{
+			BlockLock bl = getBlockLock(b);
 			if (p.hasPermission("dg.blockLockPermission") && bl.checkIfPermissionToOpen(p.getUniqueId()))
 			{
-				bl.unlock();
+				bl.unlock(this);
 				sendMessage(p.getUniqueId(), b.getType().toString() + " unlocked!");
 				System.gc();
 				return true;
@@ -268,7 +270,6 @@ public class BlockLockManager implements Listener
 	public List<String> listFriends(Player owner, Block b)
 	{
 		List<String> list = new ArrayList<String>();
-
 		BlockLock bl = getBlockLock(b);
 		if (bl != null && bl.checkIfPermissionToOpen(owner.getUniqueId()))
 		{
@@ -378,7 +379,7 @@ public class BlockLockManager implements Listener
 
 	public BlockLock getBlockLock(Block block)
 	{
-		if (isBlockLockable(block))
+		if (block.hasMetadata(blockLockKey) && isBlockLockable(block))
 		{
 			for (BlockLockUser i : players)
 			{
@@ -449,10 +450,15 @@ public class BlockLockManager implements Listener
 	// Protecting Block:
 
 	/** Preventing BlockLocks (example: doors, hoppers) to be activated by Redstone */
-	/*
-	 * @EventHandler public void onRedstone(BlockRedstoneEvent event) { BlockLock bl = getBlockLock(event.getBlock()); if (bl != null && bl.isRedstoneLock()) {
-	 * event.setNewCurrent(event.getOldCurrent()); } }
-	 */
+	@EventHandler
+	public void onRedstone(BlockRedstoneEvent event)
+	{
+		Block block = event.getBlock();
+		if (block.hasMetadata(blockLockKey) && getBlockLock(block).isRedstoneLock())
+		{
+			event.setNewCurrent(event.getOldCurrent());
+		}
+	}
 
 	/** Preventing anyone from breaking the Block, or the block below */
 	@EventHandler
@@ -461,9 +467,9 @@ public class BlockLockManager implements Listener
 		Block b = event.getBlock();
 		if (isBlockLockable(b)) // Block
 		{
-			BlockLock bl = getBlockLock(b);
-			if (bl != null)
+			if (b.hasMetadata(blockLockKey))
 			{
+				BlockLock bl = getBlockLock(b);
 				if (bl.getOwner().getUuid().equals(event.getPlayer().getUniqueId()))
 					unlock(event.getPlayer(), b);
 				else
@@ -483,10 +489,19 @@ public class BlockLockManager implements Listener
 	}
 
 	/** Checks if Block b is below a BlockLock (0/1) and if Player p has permission to open it (1/2) */
-	/*
-	 * public int checkIfBlockBelow(Block b, Player p) { Block b2 = b.getRelative(0, 1, 0); BlockLock bl2 = getBlockLock(b2); if (bl2 != null && bl2.isBlockBelowLock()) { if
-	 * (bl2.checkIfPermissionToOpen(p.getUniqueId())) return 2; else return 1; } return 0; }
-	 */
+	public int checkIfBlockBelow(Block b, Player p)
+	{
+		Block b2 = b.getRelative(0, 1, 0);
+		BlockLock bl2 = getBlockLock(b2);
+		if (bl2 != null && bl2.isBlockBelowLock())
+		{
+			if (bl2.checkIfPermissionToOpen(p.getUniqueId()))
+				return 2;
+			else
+				return 1;
+		}
+		return 0;
+	}
 
 	/** Preventing the Block from being blown up by Creeper, Wither or TNT */
 	@EventHandler
@@ -496,7 +511,13 @@ public class BlockLockManager implements Listener
 		{
 			if (event.getEntity() instanceof Creeper || event.getEntity() instanceof TNTPrimed || event.getEntity() instanceof Wither)
 			{
-				event.blockList().removeAll(getAllBlockLockBlocks());
+				List<Block> removeBlocks = new ArrayList<Block>();
+				for (Block i : event.blockList())
+				{
+					if (i.hasMetadata(blockLockKey))
+						removeBlocks.add(i);
+				}
+				event.blockList().removeAll(removeBlocks);
 			}
 		}
 		catch (Exception e)
@@ -506,10 +527,19 @@ public class BlockLockManager implements Listener
 	}
 
 	/** Preventing anyone(hoppers, etc) than the player from grabbing items from the Container */
-	/*
-	 * @EventHandler public void onInventoryMoveItem(InventoryMoveItemEvent event) { BlockLock source = getBlockLockFromInventory(event.getSource()); BlockLock dest =
-	 * getBlockLockFromInventory(event.getDestination()); if ((source != null && !event.getDestination().getType().equals(InventoryType.PLAYER) && source.isHopperLock()) // Prevents Hopper,
-	 * etc. from PUTTING items IN the chest || (dest != null && dest.isHopperLock())) // Prevents Hopper, etc. from REMOVING items FROM the chest { event.setCancelled(true); } }
-	 */
+	@EventHandler
+	public void onInventoryMoveItem(InventoryMoveItemEvent event)
+	{
+		if (true)
+			return; // TODO
+
+		BlockLock source = getBlockLockFromInventory(event.getSource());
+		BlockLock dest = getBlockLockFromInventory(event.getDestination());
+		if ((source != null && !event.getDestination().getType().equals(InventoryType.PLAYER) && source.isHopperLock()) // Prevents Hopper, etc. from PUTTING items IN the chest
+				|| (dest != null && dest.isHopperLock())) // Prevents Hopper, etc. from REMOVING items FROM the chest
+		{
+			event.setCancelled(true);
+		}
+	}
 
 }

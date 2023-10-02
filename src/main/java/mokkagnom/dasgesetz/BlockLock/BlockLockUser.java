@@ -35,7 +35,7 @@ public class BlockLockUser implements Serializable
 
     public BlockLock createBlockLock(Block b, BlockLockManager blm)
     {
-        BlockLock bl = new BlockLock(b, this);
+        BlockLock bl = new BlockLock(blm, b, this);
         blockLocks.add(bl);
         bl.createManagerMenu(blm);
 
@@ -60,7 +60,7 @@ public class BlockLockUser implements Serializable
             {
                 if (bl.getBlock().getRelative(0, 1, 0).getBlockData() instanceof Door)
                 {
-                    BlockLock bl2 = new BlockLock(b.getRelative(0, 1, 0), this);
+                    BlockLock bl2 = new BlockLock(blm, b.getRelative(0, 1, 0), this);
                     blockLocks.add(bl2);
                     bl2.setBlockLockManagerMenu(bl.getBlockLockManagerMenu());
                     bl.setSecondBlockLock(bl2);
@@ -68,7 +68,7 @@ public class BlockLockUser implements Serializable
                 }
                 else if (bl.getBlock().getRelative(0, -1, 0).getBlockData() instanceof Door)
                 {
-                    BlockLock bl2 = new BlockLock(b.getRelative(0, -1, 0), this);
+                    BlockLock bl2 = new BlockLock(blm, b.getRelative(0, -1, 0), this);
                     blockLocks.add(bl2);
                     bl2.setBlockLockManagerMenu(bl.getBlockLockManagerMenu());
                     bl.setSecondBlockLock(bl2);
@@ -85,9 +85,14 @@ public class BlockLockUser implements Serializable
         return bl;
     }
 
-    public boolean removeBlockLock(BlockLock bl)
+    public boolean removeBlockLock(BlockLock bl, BlockLockManager blm)
     {
-        return blockLocks.remove(bl) && blockLocks.remove(bl.getSecondBlockLock());
+        bl.getBlock().removeMetadata(BlockLockManager.blockLockKey, blm.getManager().getMain());
+        BlockLock bl2 = bl.getSecondBlockLock();
+        if (bl2 != null)
+            bl2.getBlock().removeMetadata(BlockLockManager.blockLockKey, blm.getManager().getMain());
+
+        return blockLocks.remove(bl) && blockLocks.remove(bl2);
     }
 
     public boolean addFriend(UUID friend)

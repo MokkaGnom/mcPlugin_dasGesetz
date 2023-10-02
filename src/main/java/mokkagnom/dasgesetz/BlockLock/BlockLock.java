@@ -9,6 +9,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.metadata.FixedMetadataValue;
+
 // Java:
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -17,7 +19,7 @@ import java.util.UUID;
 
 public class BlockLock implements Serializable
 {
-	private static final long serialVersionUID = -7616202315683796612L;
+	private static final long serialVersionUID = 934869000851557342L;
 	private transient BlockLockManagerMenu blmm;
 	private int blockPosition[];
 	private String worldName;
@@ -28,13 +30,15 @@ public class BlockLock implements Serializable
 	private boolean blockBelowLock;
 	private BlockLock secondBlockLock;
 
-	public BlockLock(Block block, BlockLockUser owner)
+	public BlockLock(BlockLockManager blm, Block block, BlockLockUser owner)
 	{
 		blockPosition = new int[3];
 		blockPosition[0] = block.getX();
 		blockPosition[1] = block.getY();
 		blockPosition[2] = block.getZ();
 		worldName = block.getWorld().getName();
+		if (!block.hasMetadata(BlockLockManager.blockLockKey))
+			block.setMetadata(BlockLockManager.blockLockKey, new FixedMetadataValue(blm.getManager().getMain(), block.getType()));
 
 		this.blmm = null;
 		this.owner = owner;
@@ -54,9 +58,9 @@ public class BlockLock implements Serializable
 		}
 	}
 
-	public boolean unlock()
+	public boolean unlock(BlockLockManager blm)
 	{
-		return owner.removeBlockLock(this);
+		return owner.removeBlockLock(this, blm);
 	}
 
 	public boolean createManagerMenu(BlockLockManager blManager)
@@ -79,7 +83,7 @@ public class BlockLock implements Serializable
 				blmm.open(p);
 				return true;
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
 				Bukkit.getLogger().severe("BlockLock: openManagerInventory(Player p): blmm.open(Player p) Exception: " + e.getLocalizedMessage());
 				return false;

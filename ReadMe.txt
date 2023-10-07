@@ -3,10 +3,11 @@ Das Gesetz
 by MokkaGnom ©2023
 ----------------------
 
-dasGesetz beinhaltet mehrere Plugins welche mit dem "/dgManager <plugin> <0/1>" -command aktiviert oder deaktiviert werden können.
+"dasGesetz" ist ein Minecraft Bukkit Plugin, welches mehrere Sub-Plugins beinhaltet.
+Diese können mit dem "/dgManager <plugin> <0/1>" -command aktiviert oder deaktiviert werden.
 Die Änderungen werden erst nach einem Serverneustart wirksam.
 Anstelle des commands kann auch die config.yml-Datei benutzt werden.
-In der config.yml-Datei können noch mehr Einstellungen getroffen werden.
+In der config.yml-Datei können auch Einstellungen für die Sub-Plugins getroffen werden.
 
 WICHTIG: Nach dem Installieren des Plugins muss der Server zweimal neugestartet werden, damit das Plugin voll funktionsfähig ist.
 
@@ -28,9 +29,9 @@ DeathChest:
 	Bei Serverneustart verschwinden alle DeathChests!
 	
 BlockLock:
-	Truhen/Türen/Hopper/Öfen werden beim platzieren automatisch verschlossen.
+	Truhen/Türen/Hopper/Öfen/etc. werden beim platzieren automatisch verschlossen (Doppeltruhen müssen einzeln gelockt/geunlockt werden).
 	Man kann das Schloss und die Kompatibilität (z.B. Redstone, Trichter, etc.) mit commands "/lockBlock <lock/unlock/addFriend/removeFriend>" oder mit einem shift + Rechtsklick verwalten.
-	Der Block ist geschützt vor: Benuten/Abbauen von anderen Spielern, Redstone Signal, Trichter, Abbauen vom Block darunter, Explosionen (TNT, Creeper).
+	Der Block ist geschützt vor: Benuten/Abbauen von anderen Spielern, Redstone Signal, Trichter, Abbauen vom Block darunter, Explosionen (TNT, Creeper, Wither).
 	
 Home:
 	Ein Spieler kann mit dem command "/home add <name>" einen tp-Punkt an seiner aktuellen Position erstellen.
@@ -46,7 +47,14 @@ BlockLogger:
 	Wenn ein Spieler einen Sweet-Berry-Busch oder einen Blitzableiter platziert, wird der Ort und die Zeit in der jeweiligen log-Datei gespeichert.
 	
 Messages:
-	Wenn ein Spieler dem Server joint wird er begrüßt.
-	Wenn ein Operator dem Server joint, wird der ganze Server (alle Spieler) benachrichtigt.
+	Wenn ein Spieler dem Server joint wird ihm eine Nachricht angezeigt.
+	Die Nachricht wird in der Config-Datei festgelegt.
 	
+Ping:
+	Wenn ein Spieler einen Stick in der off-Hand hält und dann einen Rechtsklick macht, "pinged" er an der Stelle, wo er hinguckt.
+	Ein Ping ist eine Effekt-Wolke mit Nametag (Name des Spielers).
+	Der Ping hat einen cooldown, welcher in der Config-Datei festgelegt werden kann.
+	Der Ping ist nur für eine gewisse Zeit sichtbar. Die Zeit kann in der config-Datei angepasst werden.
+	Die Farbe der Wolke kann mit dem Command: "/ping setColor <colorcode>" verändert werden.
+	Die Zeiten in der Config-Datei sind in Millisekunden anzugeben.
 	

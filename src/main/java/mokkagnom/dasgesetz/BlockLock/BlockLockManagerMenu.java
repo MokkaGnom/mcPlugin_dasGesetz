@@ -92,6 +92,7 @@ public class BlockLockManagerMenu implements Listener
 				break;
 
 			case 3:
+				BlockLockManager.sendMessage(p.getUniqueId(), "Not supported", true);
 				blockLock.setHopperLock(!blockLock.isHopperLock());
 				break;
 

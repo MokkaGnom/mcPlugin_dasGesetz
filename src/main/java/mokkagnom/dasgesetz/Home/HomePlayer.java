@@ -49,13 +49,19 @@ public class HomePlayer implements Serializable
 
 	public boolean removeHome(String name)
 	{
+		Home h = null;
 		for (Home i : homes)
 		{
 			if (i.getName().equalsIgnoreCase(name))
 			{
-				homes.remove(i);
-				return true;
+				h = i;
+				break;
 			}
+		}
+
+		if (h != null)
+		{
+			return homes.remove(h);
 		}
 		return false;
 	}
@@ -71,23 +77,22 @@ public class HomePlayer implements Serializable
 
 		return homesStr;
 	}
-	
+
 	public List<String> getAllHomeNames()
 	{
 		List<String> names = new ArrayList<String>();
-		
-		for(Home i : homes)
+
+		for (Home i : homes)
 		{
 			names.add(i.getName());
 		}
-		
+
 		return names;
 	}
-	
+
 	public UUID getOwner()
 	{
 		return owner;
 	}
-	
 
 }

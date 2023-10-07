@@ -56,17 +56,20 @@ public class BlockLockManager implements Listener
 		players = new ArrayList<BlockLockUser>();
 	}
 
-	public static boolean sendMessage(UUID receiver, String message, boolean error)
+	public static boolean sendMessage(UUID receiver, String message, boolean error, boolean consoleLog)
 	{
 		if (receiver != null)
 		{
 			Player p = Bukkit.getServer().getPlayer(receiver);
 			if (p != null && message != null)
 			{
+				if (consoleLog)
+				{
+					Bukkit.getConsoleSender().sendMessage("BlockLock Error: " + message);
+				}
 				if (error)
 				{
 					p.sendMessage("§7[§BBlockLock§7] §C" + message);
-					Bukkit.getConsoleSender().sendMessage("BlockLock Error: " + message);
 				}
 				else
 				{
@@ -78,9 +81,14 @@ public class BlockLockManager implements Listener
 		return false;
 	}
 
+	public static boolean sendMessage(UUID receiver, String message, boolean error)
+	{
+		return sendMessage(receiver, message, error, false);
+	}
+
 	public static boolean sendMessage(UUID receiver, String message)
 	{
-		return sendMessage(receiver, message, false);
+		return sendMessage(receiver, message, false, false);
 	}
 
 	@EventHandler

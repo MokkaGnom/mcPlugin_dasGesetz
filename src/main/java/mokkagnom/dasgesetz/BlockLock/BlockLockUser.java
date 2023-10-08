@@ -11,7 +11,7 @@ import org.bukkit.block.data.type.Door;
 
 public class BlockLockUser implements Serializable
 {
-    private static final long serialVersionUID = 8996225305309407338L;
+    private static final long serialVersionUID = 1335167459352378977L;
     private UUID uuid;
     private List<BlockLock> blockLocks;
     private List<UUID> friends;

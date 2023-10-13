@@ -20,7 +20,7 @@ import org.bukkit.entity.Wither;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.WorldSaveEvent;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 
 import mokkagnom.dasgesetz.Manager;
 
@@ -37,23 +37,25 @@ import java.util.UUID;
 
 public class BlockLockManager implements Listener
 {
-	public static final List<Material> lockableBlocks = Arrays.asList(Material.ACACIA_DOOR, Material.ACACIA_TRAPDOOR, Material.BIRCH_DOOR, Material.BIRCH_TRAPDOOR, Material.CRIMSON_DOOR,
-			Material.CRIMSON_TRAPDOOR, Material.DARK_OAK_DOOR, Material.DARK_OAK_TRAPDOOR, Material.IRON_DOOR, Material.IRON_TRAPDOOR, Material.JUNGLE_DOOR, Material.JUNGLE_TRAPDOOR,
-			Material.MANGROVE_DOOR, Material.MANGROVE_TRAPDOOR, Material.OAK_DOOR, Material.OAK_TRAPDOOR, Material.SPRUCE_DOOR, Material.SPRUCE_TRAPDOOR, Material.WARPED_DOOR,
-			Material.WARPED_TRAPDOOR, Material.CHEST, Material.TRAPPED_CHEST, Material.HOPPER, Material.FURNACE, Material.BLAST_FURNACE, Material.SMOKER, Material.BARREL,
-			Material.BREWING_STAND, Material.OAK_FENCE_GATE, Material.BIRCH_FENCE_GATE, Material.ACACIA_FENCE_GATE, Material.BAMBOO_FENCE_GATE, Material.CHERRY_FENCE_GATE,
+	public static final List<Material> lockableBlocks = Arrays.asList(Material.CHERRY_DOOR, Material.ACACIA_DOOR, Material.ACACIA_TRAPDOOR, Material.BIRCH_DOOR, Material.BIRCH_TRAPDOOR,
+			Material.CRIMSON_DOOR, Material.CRIMSON_TRAPDOOR, Material.DARK_OAK_DOOR, Material.DARK_OAK_TRAPDOOR, Material.IRON_DOOR, Material.IRON_TRAPDOOR, Material.JUNGLE_DOOR,
+			Material.JUNGLE_TRAPDOOR, Material.MANGROVE_DOOR, Material.MANGROVE_TRAPDOOR, Material.OAK_DOOR, Material.OAK_TRAPDOOR, Material.SPRUCE_DOOR, Material.SPRUCE_TRAPDOOR,
+			Material.WARPED_DOOR, Material.WARPED_TRAPDOOR, Material.CHEST, Material.TRAPPED_CHEST, Material.HOPPER, Material.FURNACE, Material.BLAST_FURNACE, Material.SMOKER,
+			Material.BARREL, Material.BREWING_STAND, Material.OAK_FENCE_GATE, Material.BIRCH_FENCE_GATE, Material.ACACIA_FENCE_GATE, Material.BAMBOO_FENCE_GATE, Material.CHERRY_FENCE_GATE,
 			Material.JUNGLE_FENCE_GATE, Material.SPRUCE_FENCE_GATE, Material.WARPED_FENCE_GATE, Material.CRIMSON_FENCE_GATE, Material.DARK_OAK_FENCE_GATE, Material.MANGROVE_FENCE_GATE);
 
 	public static final String blockLockKey = "BlockLock";
 	private Manager manager;
 	private File saveFile;
 	private List<BlockLockUser> players;
+	private boolean globalHopperProtection;
 
 	public BlockLockManager(Manager manager)
 	{
 		this.manager = manager;
 		this.saveFile = new File(this.manager.getDataFolder(), "BlockLock.bin");
 		players = new ArrayList<BlockLockUser>();
+		globalHopperProtection = true;
 	}
 
 	public static boolean sendMessage(UUID receiver, String message, boolean error, boolean consoleLog)
@@ -382,6 +384,7 @@ public class BlockLockManager implements Listener
 
 	public boolean isBlockLockable(Block block)
 	{
+		// return block instanceof Chest || block instanceof Door || block instanceof Gate || block instanceof InventoryHolder;
 		return lockableBlocks.contains(block.getType());
 	}
 
@@ -401,19 +404,19 @@ public class BlockLockManager implements Listener
 		return null;
 	}
 
-	public BlockLock getBlockLockFromInventory(Inventory inv)
+	public BlockLock getBlockLockFromInventoryHolder(InventoryHolder holder)
 	{
-		for (BlockLockUser i : players)
+		try
 		{
-			for (BlockLock bl : i.getBlockLocks())
+			Block b = (Block) holder;
+			if (b.hasMetadata(blockLockKey))
 			{
-				Inventory inven = bl.getInventory();
-				if (inven != null && inv != null)
-				{
-					if (inven.equals(inv))
-						return bl;
-				}
+				return getBlockLockUser(UUID.fromString(b.getMetadata(blockLockKey).get(0).asString())).getBlockLock(b);
 			}
+		}
+		catch (Exception e)
+		{
+			Bukkit.getLogger().warning("BlockLock: getBlockLockFromInventoryHolder: " + e.getLocalizedMessage());
 		}
 		return null;
 	}
@@ -452,6 +455,16 @@ public class BlockLockManager implements Listener
 	public Manager getManager()
 	{
 		return manager;
+	}
+
+	public boolean getGlobalHopperProtection()
+	{
+		return globalHopperProtection;
+	}
+
+	public void setGlobalHopperProtection(boolean b)
+	{
+		globalHopperProtection = b;
 	}
 
 	/* ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- */
@@ -534,19 +547,24 @@ public class BlockLockManager implements Listener
 		}
 	}
 
-	/** Preventing anyone(hoppers, etc) than the player from grabbing items from the Container */
+	/** Preventing hoppers from grabbing/putting items from/to the container */
 	@EventHandler
 	public void onInventoryMoveItem(InventoryMoveItemEvent event)
 	{
-		if (true)
-			return; // TODO
+		// TODO: Testen
+		if (!globalHopperProtection)
+			return;
 
-		BlockLock source = getBlockLockFromInventory(event.getSource());
-		BlockLock dest = getBlockLockFromInventory(event.getDestination());
-		if ((source != null && !event.getDestination().getType().equals(InventoryType.PLAYER) && source.isHopperLock()) // Prevents Hopper, etc. from PUTTING items IN the chest
-				|| (dest != null && dest.isHopperLock())) // Prevents Hopper, etc. from REMOVING items FROM the chest
+		if (event.getSource().getType().equals(InventoryType.HOPPER) || event.getDestination().getType().equals(InventoryType.HOPPER))
 		{
-			event.setCancelled(true);
+			BlockLock source = getBlockLockFromInventoryHolder(event.getSource().getHolder());
+			BlockLock dest = getBlockLockFromInventoryHolder(event.getDestination().getHolder());
+
+			if ((source != null && source.isHopperLock()) // Prevents Hopper, etc. from PUTTING items IN the chest
+					|| (dest != null && dest.isHopperLock())) // Prevents Hopper, etc. from REMOVING items FROM the chest
+			{
+				event.setCancelled(true);
+			}
 		}
 	}
 

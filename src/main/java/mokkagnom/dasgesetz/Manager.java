@@ -50,7 +50,24 @@ public class Manager implements TabExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
 	{
-		if (args.length == 2)
+		if (args.length == 1)
+		{
+			int index = Arrays.asList(plugins).indexOf(args[0]);
+
+			if (index == -1)
+			{
+				sender.sendMessage("Ungültiges Plugin");
+				return false;
+			}
+
+			if (main.getConfig().getBoolean("Manager." + plugins[index]))
+				sender.sendMessage("Plugin: \"" + plugins[index] + "\" ist aktiviert");
+			else
+				sender.sendMessage("Plugin: \"" + plugins[index] + "\" ist deaktiviert");
+
+			return true;
+		}
+		else if (args.length == 2)
 		{
 			int index = Arrays.asList(plugins).indexOf(args[0]);
 			boolean deactivate = args[1] == "0";

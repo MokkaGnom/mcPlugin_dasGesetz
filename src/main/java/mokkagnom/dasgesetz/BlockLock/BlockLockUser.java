@@ -148,6 +148,16 @@ public class BlockLockUser implements Serializable
         useSneakMenu = usm;
     }
 
+    public BlockLock getBlockLock(Block b)
+    {
+        for (BlockLock i : blockLocks)
+        {
+            if (i.getBlock().equals(b))
+                return i;
+        }
+        return null;
+    }
+
     public UUID getUuid()
     {
         return uuid;

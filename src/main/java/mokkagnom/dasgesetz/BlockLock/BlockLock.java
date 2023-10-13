@@ -38,7 +38,7 @@ public class BlockLock implements Serializable
 		blockPosition[2] = block.getZ();
 		worldName = block.getWorld().getName();
 		if (!block.hasMetadata(BlockLockManager.blockLockKey))
-			block.setMetadata(BlockLockManager.blockLockKey, new FixedMetadataValue(blm.getManager().getMain(), block.getType()));
+			block.setMetadata(BlockLockManager.blockLockKey, new FixedMetadataValue(blm.getManager().getMain(), owner.getUuid()));
 
 		this.blmm = null;
 		this.owner = owner;

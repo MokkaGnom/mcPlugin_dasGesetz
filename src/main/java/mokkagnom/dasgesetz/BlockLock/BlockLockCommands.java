@@ -16,6 +16,8 @@ import org.bukkit.OfflinePlayer;
 
 public class BlockLockCommands implements TabExecutor
 {
+	private static List<String> commands = Arrays.asList("lock", "unlock", "addFriend", "removeFriend", "addGlobalFriend", "removeGlobalFriend", "listFriends", "showMenu",
+			"globalHopperProtection");
 	private BlockLockManager clManager;
 
 	public BlockLockCommands(BlockLockManager clManager)
@@ -37,7 +39,7 @@ public class BlockLockCommands implements TabExecutor
 			}
 			else if (args[0].equalsIgnoreCase("lock"))
 			{
-				clManager.lock(p, b);				
+				clManager.lock(p, b);
 			}
 			else if (args[0].equalsIgnoreCase("listFriends"))
 			{
@@ -54,7 +56,7 @@ public class BlockLockCommands implements TabExecutor
 			return true;
 
 		}
-		else if (args.length == 2) // showmenu
+		else if (args.length == 2) // showmenu & globalHopperProtection
 		{
 			if (args[0].equalsIgnoreCase("showMenu"))
 			{
@@ -64,6 +66,16 @@ public class BlockLockCommands implements TabExecutor
 					BlockLockManager.sendMessage(p.getUniqueId(), "Menu active");
 				else
 					BlockLockManager.sendMessage(p.getUniqueId(), "Menu inactive");
+				return true;
+			}
+			else if (args[1].equalsIgnoreCase("globalHopperProtection"))
+			{
+				boolean bool = args[1].equalsIgnoreCase("true") || args[1].equalsIgnoreCase("1");
+				clManager.setGlobalHopperProtection(bool);
+				if (bool)
+					BlockLockManager.sendMessage(p.getUniqueId(), "GlobalHopperProtection active");
+				else
+					BlockLockManager.sendMessage(p.getUniqueId(), "GlobalHopperProtection inactive");
 				return true;
 			}
 
@@ -150,14 +162,14 @@ public class BlockLockCommands implements TabExecutor
 	{
 		if (args.length == 1)
 		{
-			return Arrays.asList("lock", "unlock", "addFriend", "removeFriend", "addGlobalFriend", "removeGlobalFriend", "listFriends", "showMenu");
+			return commands;
 		}
 		else if (args.length == 2 && (args[0].equalsIgnoreCase("addFriend") || args[0].equalsIgnoreCase("removeFriend") || args[0].equalsIgnoreCase("addGlobalFriend")
 				|| args[0].equalsIgnoreCase("removeGlobalFriend")))
 		{
 			return null;
 		}
-		else if (args.length == 2 && args[0].equalsIgnoreCase("showMenu"))
+		else if (args.length == 2 && (args[0].equalsIgnoreCase("showMenu") || args[0].equalsIgnoreCase("globalHopperProtection")))
 		{
 			return Arrays.asList("0", "1");
 		}

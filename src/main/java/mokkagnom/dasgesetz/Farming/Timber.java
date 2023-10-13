@@ -75,6 +75,7 @@ public class Timber implements Listener
 		{
 			logBlocks.add(nextBlock);
 			nextBlock = chunk.getBlock(nextBlock.getX() & 15, nextBlock.getY() + 1, nextBlock.getZ() & 15);
+			//nextBlock = nextBlock.getRelative(0, 1, 0);
 		}
 
 		// Add damage to the axe
@@ -82,11 +83,6 @@ public class Timber implements Listener
 		Damageable im = (Damageable) item.getItemMeta();
 
 		// Checking if axe has enought durability for tree
-		while (im.getDamage() + logBlocks.size() > timberAxeMaterial[axeUsedIndex].getMaxDurability())
-		{
-			logBlocks.remove(logBlocks.size() - 1);
-		}
-
 		int damage = logBlocks.size();
 		if (item.containsEnchantment(Enchantment.DURABILITY))
 		{
@@ -98,6 +94,11 @@ public class Timber implements Listener
 				if (chance < enchChance)
 					damage--;
 			}
+		}
+
+		while (im.getDamage() + damage > timberAxeMaterial[axeUsedIndex].getMaxDurability())
+		{
+			logBlocks.remove(logBlocks.size() - 1);
 		}
 		im.setDamage(im.getDamage() + damage);
 		item.setItemMeta(im);

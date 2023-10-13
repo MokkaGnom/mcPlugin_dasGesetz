@@ -68,7 +68,7 @@ public class BlockLockCommands implements TabExecutor
 					BlockLockManager.sendMessage(p.getUniqueId(), "Menu inactive");
 				return true;
 			}
-			else if (args[1].equalsIgnoreCase("globalHopperProtection"))
+			else if (args[0].equalsIgnoreCase("globalHopperProtection"))
 			{
 				boolean bool = args[1].equalsIgnoreCase("true") || args[1].equalsIgnoreCase("1");
 				clManager.setGlobalHopperProtection(bool);

@@ -20,7 +20,7 @@ import org.bukkit.entity.Wither;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.WorldSaveEvent;
-import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.Inventory;
 
 import mokkagnom.dasgesetz.Manager;
 
@@ -404,11 +404,11 @@ public class BlockLockManager implements Listener
 		return null;
 	}
 
-	public BlockLock getBlockLockFromInventoryHolder(InventoryHolder holder)
+	public BlockLock getBlockLockFromInventory(Inventory inv)
 	{
 		try
 		{
-			Block b = (Block) holder;
+			Block b = inv.getLocation().getBlock();
 			if (b.hasMetadata(blockLockKey))
 			{
 				return getBlockLockUser(UUID.fromString(b.getMetadata(blockLockKey).get(0).asString())).getBlockLock(b);
@@ -557,8 +557,8 @@ public class BlockLockManager implements Listener
 
 		if (event.getSource().getType().equals(InventoryType.HOPPER) || event.getDestination().getType().equals(InventoryType.HOPPER))
 		{
-			BlockLock source = getBlockLockFromInventoryHolder(event.getSource().getHolder());
-			BlockLock dest = getBlockLockFromInventoryHolder(event.getDestination().getHolder());
+			BlockLock source = getBlockLockFromInventory(event.getSource());
+			BlockLock dest = getBlockLockFromInventory(event.getDestination());
 
 			if ((source != null && source.isHopperLock()) // Prevents Hopper, etc. from PUTTING items IN the chest
 					|| (dest != null && dest.isHopperLock())) // Prevents Hopper, etc. from REMOVING items FROM the chest

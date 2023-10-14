@@ -416,7 +416,10 @@ public class BlockLockManager implements Listener
 		}
 		catch (Exception e)
 		{
-			Bukkit.getLogger().warning("BlockLock: getBlockLockFromInventoryHolder: " + e.getLocalizedMessage());
+			if (!(e.getLocalizedMessage().equalsIgnoreCase("null")))
+			{
+				Bukkit.getLogger().warning("BlockLock: getBlockLockFromInventoryHolder: " + e.getLocalizedMessage());
+			}
 		}
 		return null;
 	}

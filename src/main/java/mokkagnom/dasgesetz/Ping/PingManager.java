@@ -33,7 +33,7 @@ public class PingManager implements Listener
         if (p.hasPermission("dg.pingPermission") && checkCooldown(p) && p.getInventory().getItemInOffHand().getType().equals(Material.STICK)
                 && (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)))
         {
-            Block b = p.getTargetBlock(null, 255);
+            Block b = p.getTargetBlockExact(255);
             String color = null;
             if (p.hasMetadata(colorMetaKey))
                 color = p.getMetadata(colorMetaKey).get(0).asString();

@@ -80,7 +80,7 @@ public class BlockLockManagerMenu implements Listener
 			switch (index)
 			{
 			case 0:
-				blManager.unlock(p, p.getTargetBlock(null, 255));
+				blManager.unlock(p, p.getTargetBlockExact(255));
 				p.closeInventory();
 				break;
 

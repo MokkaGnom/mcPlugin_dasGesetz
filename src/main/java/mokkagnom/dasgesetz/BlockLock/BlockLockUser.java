@@ -177,4 +177,14 @@ public class BlockLockUser implements Serializable
     {
         return useSneakMenu;
     }
+
+    public List<String> getFriendsAsString()
+    {
+        List<String> list = new ArrayList<String>();
+        for (UUID i : friends)
+        {
+            list.add(i.toString() + Bukkit.getPlayer(i));
+        }
+        return list;
+    }
 }

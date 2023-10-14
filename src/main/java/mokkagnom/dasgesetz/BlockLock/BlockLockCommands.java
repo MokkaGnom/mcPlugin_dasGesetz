@@ -1,5 +1,6 @@
 package mokkagnom.dasgesetz.BlockLock;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -35,7 +36,7 @@ public class BlockLockCommands implements TabExecutor
 		}
 
 		Player p = (Player) sender;
-		Block b = p.getTargetBlock(null, 255);
+		Block b = p.getTargetBlockExact(255);
 
 		if (args.length == 1) // lock/unlock/listFriends
 		{
@@ -174,18 +175,40 @@ public class BlockLockCommands implements TabExecutor
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args)
 	{
+		if (!(sender instanceof Player))
+		{
+			sender.sendMessage("You must be a player to use this command");
+			return Arrays.asList("");
+		}
+
+		Player p = (Player) sender;
+
 		if (args.length == 1)
 		{
-			return commands;
+			if (sender instanceof Player && ((Player) sender).isOp())
+				return commands;
+			else
+			{
+				List<String> list = new ArrayList<String>();
+				list.addAll(commands);
+				list.remove("globalHopperProtection");
+				return list;
+			}
 		}
-		else if (args.length == 2 && (args[0].equalsIgnoreCase("addFriend") || args[0].equalsIgnoreCase("removeFriend") || args[0].equalsIgnoreCase("addGlobalFriend")
-				|| args[0].equalsIgnoreCase("removeGlobalFriend")))
+		else if (args.length == 2)
 		{
-			return null;
-		}
-		else if (args.length == 2 && (args[0].equalsIgnoreCase("showMenu") || args[0].equalsIgnoreCase("globalHopperProtection")))
-		{
-			return Arrays.asList("0", "1");
+			if ((args[0].equalsIgnoreCase("addFriend") || args[0].equalsIgnoreCase("addGlobalFriend")) || args[0].equalsIgnoreCase("removeFriend"))
+			{
+				return null;
+			}
+			else if (args[0].equalsIgnoreCase("removeGlobalFriend"))
+			{
+				return clManager.getBlockLockUser(p.getUniqueId()).getFriendsAsString();
+			}
+			else if ((args[0].equalsIgnoreCase("showMenu") || args[0].equalsIgnoreCase("globalHopperProtection")))
+			{
+				return Arrays.asList("0", "1");
+			}
 		}
 		return Arrays.asList("");
 	}

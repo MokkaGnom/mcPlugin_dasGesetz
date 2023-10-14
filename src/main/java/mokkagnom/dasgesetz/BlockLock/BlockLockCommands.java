@@ -28,6 +28,12 @@ public class BlockLockCommands implements TabExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
 	{
+		if (!(sender instanceof Player))
+		{
+			sender.sendMessage("You must be a player to use this command");
+			return false;
+		}
+
 		Player p = (Player) sender;
 		Block b = p.getTargetBlock(null, 255);
 
@@ -68,15 +74,23 @@ public class BlockLockCommands implements TabExecutor
 					BlockLockManager.sendMessage(p.getUniqueId(), "Menu inactive");
 				return true;
 			}
-			else if (args[0].equalsIgnoreCase("globalHopperProtection") && sender instanceof Player && ((Player) sender).isOp())
+			else if (args[0].equalsIgnoreCase("globalHopperProtection"))
 			{
-				boolean bool = args[1].equalsIgnoreCase("true") || args[1].equalsIgnoreCase("1");
-				clManager.setGlobalHopperProtection(bool);
-				if (bool)
-					BlockLockManager.sendMessage(p.getUniqueId(), "GlobalHopperProtection active");
+				if (p.isOp())
+				{
+					boolean bool = args[1].equalsIgnoreCase("true") || args[1].equalsIgnoreCase("1");
+					clManager.setGlobalHopperProtection(bool);
+					if (bool)
+						BlockLockManager.sendMessage(p.getUniqueId(), "GlobalHopperProtection active");
+					else
+						BlockLockManager.sendMessage(p.getUniqueId(), "GlobalHopperProtection inactive");
+					return true;
+				}
 				else
-					BlockLockManager.sendMessage(p.getUniqueId(), "GlobalHopperProtection inactive");
-				return true;
+				{
+					BlockLockManager.sendMessage(p.getUniqueId(), "No Permission");
+					return true;
+				}
 			}
 
 			// Friends:

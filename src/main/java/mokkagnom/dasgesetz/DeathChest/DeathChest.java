@@ -133,7 +133,7 @@ public class DeathChest
 			if (item != null)
 			{
 				empty = false;
-				break;
+				return false;
 			}
 		}
 
@@ -147,9 +147,7 @@ public class DeathChest
 			remove();
 			return true;
 		}
-		else
-			return false;
-
+		else return false;
 	}
 
 	public boolean remove()

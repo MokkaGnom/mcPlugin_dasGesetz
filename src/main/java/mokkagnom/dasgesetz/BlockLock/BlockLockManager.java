@@ -551,7 +551,6 @@ public class BlockLockManager implements Listener
 	@EventHandler
 	public void onInventoryMoveItem(InventoryMoveItemEvent event)
 	{
-		// TODO: Testen
 		if (!globalHopperProtection)
 			return;
 

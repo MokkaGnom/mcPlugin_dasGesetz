@@ -11,6 +11,7 @@ import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryType;
 // Bukkit:
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Creeper;
@@ -406,19 +407,23 @@ public class BlockLockManager implements Listener
 
 	public BlockLock getBlockLockFromInventory(Inventory inv)
 	{
-		try
+		if (inv != null)
 		{
-			Block b = inv.getLocation().getBlock();
-			if (b.hasMetadata(blockLockKey))
+			try
 			{
-				return getBlockLockUser(UUID.fromString(b.getMetadata(blockLockKey).get(0).asString())).getBlockLock(b);
+				Location loc = inv.getLocation();
+				if (loc != null)
+				{
+					Block b = loc.getBlock();
+					if (b.hasMetadata(blockLockKey))
+					{
+						return getBlockLockUser(UUID.fromString(b.getMetadata(blockLockKey).get(0).asString())).getBlockLock(b);
+					}
+				}
 			}
-		}
-		catch (Exception e)
-		{
-			if (!(e.getLocalizedMessage().equalsIgnoreCase("null")))
+			catch (Exception e)
 			{
-				Bukkit.getLogger().warning("BlockLock: getBlockLockFromInventoryHolder: " + e.getLocalizedMessage());
+				Bukkit.getLogger().warning("BlockLock: getBlockLockFromInventory: " + e.getLocalizedMessage());
 			}
 		}
 		return null;
